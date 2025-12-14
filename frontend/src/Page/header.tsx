@@ -4,7 +4,6 @@ import {
   Toolbar,
   IconButton,
   Box,
-  Typography,
   useTheme,
   useMediaQuery,
   Drawer,
@@ -15,25 +14,58 @@ import {
   Divider,
 } from "@mui/material";
 import MenuIcon from "@mui/icons-material/Menu";
-import DirectionsBusIcon from "@mui/icons-material/DirectionsBus";
-import EventSeatIcon from "@mui/icons-material/EventSeat";
-import NotesIcon from "@mui/icons-material/Notes";
 import WhatsAppIcon from "@mui/icons-material/WhatsApp";
+import { useNavigate } from "react-router-dom";
 
 /* ---------------- FONT ---------------- */
 
 const Montserrat = '"Montserrat", sans-serif';
+
+/* ---------------- ICON IMAGES ---------------- */
+
+const ICONS = {
+  vanDetails: "https://cdn-icons-png.flaticon.com/512/3774/3774278.png",
+  vanBooking: "https://cdn-icons-png.flaticon.com/512/747/747310.png",
+  specialRequest: "https://cdn-icons-png.flaticon.com/512/1828/1828817.png",
+};
 
 /* ---------------- MAIN COMPONENT ---------------- */
 
 export default function EtsyStyleHeader() {
   const theme = useTheme();
   const isMobile = useMediaQuery(theme.breakpoints.down("md"));
+  const navigate = useNavigate();
 
   const [drawerOpen, setDrawerOpen] = useState(false);
 
   const logoUrl =
     "https://i.ibb.co/C5gQQ0vN/Gemini-Generated-Image-gamnzygamnzygamn.png";
+
+  const handleNavigate = (path: string) => {
+    navigate(path);
+    setDrawerOpen(false);
+  };
+
+  const IconImg = ({ src, bgColor }: { src: string; bgColor?: string }) => (
+    <Box
+      sx={{
+        width: 38,
+        height: 38,
+        borderRadius: "50%",
+        backgroundColor: bgColor || "transparent",
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+        mr: 2,
+      }}
+    >
+      <Box component="img" src={src} sx={{ width: 22, height: 22 }} />
+    </Box>
+  );
+
+  /* ✅ RESPONSIVE COLORS */
+  const headerBg = isMobile ? "#ffffff" : "#fbfcfc";
+  const drawerBg = isMobile ? "#ffffff" : "#fbfcfc";
 
   return (
     <>
@@ -41,7 +73,7 @@ export default function EtsyStyleHeader() {
         position="static"
         elevation={0}
         sx={{
-          backgroundColor: "#fbfcfc",
+          backgroundColor: headerBg, // 👈 responsive
           color: "#000",
           px: { xs: 3, sm: 6, md: 10 },
           mt: "55px",
@@ -53,8 +85,8 @@ export default function EtsyStyleHeader() {
           sx={{
             justifyContent: "space-between",
             alignItems: "center",
-            pt: { xs: 2, md: 3 }, // 👈 TOP SPACE ONLY
-            pb: 1,              // unchanged bottom
+            pt: { xs: 2, md: 3 },
+            pb: 1,
           }}
         >
           {/* LOGO */}
@@ -81,24 +113,16 @@ export default function EtsyStyleHeader() {
         anchor="left"
         open={drawerOpen}
         onClose={() => setDrawerOpen(false)}
+        PaperProps={{
+          sx: {
+            backgroundColor: drawerBg, // 👈 responsive
+          },
+        }}
       >
-        <Box
-          sx={{
-            width: 280,
-            py: 2,
-            fontFamily: Montserrat,
-          }}
-        >
+        <Box sx={{ width: 280, py: 2, fontFamily: Montserrat }}>
           {/* LOGO */}
           <Box sx={{ display: "flex", justifyContent: "center", mb: 2 }}>
-            <Box
-              component="img"
-              src={logoUrl}
-              sx={{
-                height: 68,
-                width: "auto",
-              }}
-            />
+            <Box component="img" src={logoUrl} sx={{ height: 68 }} />
           </Box>
 
           <Divider />
@@ -106,8 +130,8 @@ export default function EtsyStyleHeader() {
           {/* MENU ITEMS */}
           <List>
             <ListItem disablePadding>
-              <ListItemButton>
-                <DirectionsBusIcon sx={{ mr: 2 }} />
+              <ListItemButton onClick={() => handleNavigate("/van-details")}>
+                <IconImg src={ICONS.vanDetails} />
                 <ListItemText
                   primary="Van Details"
                   primaryTypographyProps={{
@@ -120,8 +144,8 @@ export default function EtsyStyleHeader() {
             </ListItem>
 
             <ListItem disablePadding>
-              <ListItemButton>
-                <EventSeatIcon sx={{ mr: 2 }} />
+              <ListItemButton onClick={() => handleNavigate("/van-booking")}>
+                <IconImg src={ICONS.vanBooking} bgColor="#E3F2FD" />
                 <ListItemText
                   primary="Van Booking"
                   primaryTypographyProps={{
@@ -134,8 +158,8 @@ export default function EtsyStyleHeader() {
             </ListItem>
 
             <ListItem disablePadding>
-              <ListItemButton>
-                <NotesIcon sx={{ mr: 2 }} />
+              <ListItemButton onClick={() => handleNavigate("/special-request")}>
+                <IconImg src={ICONS.specialRequest} />
                 <ListItemText
                   primary="Special Request"
                   primaryTypographyProps={{
@@ -164,6 +188,7 @@ export default function EtsyStyleHeader() {
               fontFamily: Montserrat,
               cursor: "pointer",
             }}
+            onClick={() => window.open("https://wa.me/966XXXXXXXXX", "_blank")}
           >
             <WhatsAppIcon fontSize="small" />
             Easy & Fast Van Booking
