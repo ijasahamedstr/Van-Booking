@@ -1,4 +1,5 @@
 import Header from "./Page/header"
+import Home from "./Page/Home";
 import Topbar from "./Page/Topbar"
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 
@@ -9,6 +10,7 @@ function App() {
       <BrowserRouter>
       <Topbar/>
       <Header/>
+      <Home/>
       <Routes>
         <Route path="/van-details" element={<div>Van Details Page</div>} />
         <Route path="/van-booking" element={<div>Van Booking Page</div>} />
