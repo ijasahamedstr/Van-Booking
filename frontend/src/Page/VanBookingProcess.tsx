@@ -5,7 +5,7 @@ import { keyframes } from "@mui/system";
 
 const float = keyframes`
   0% { transform: translateY(0); }
-  50% { transform: translateY(-6px); }
+  50% { transform: translateY(-4px); }
   100% { transform: translateY(0); }
 `;
 
@@ -38,7 +38,7 @@ const steps = [
 
 const VanBookingProcess = () => {
   return (
-    <Box sx={{ py: { xs: 6, md: 8 }, backgroundColor: "#fff" }}>
+    <Box sx={{ py: { xs: 4, md: 8 }, backgroundColor: "#fff" }}>
       <Container maxWidth="xl">
         {/* TITLE */}
         <Typography
@@ -46,8 +46,9 @@ const VanBookingProcess = () => {
           align="center"
           sx={{
             fontWeight: 700,
-            mb: 6,
+            mb: { xs: 4, md: 6 },
             fontFamily: "Montserrat, sans-serif",
+            textShadow: "0 2px 12px rgba(6,249,243,0.35)",
           }}
         >
           How Van Booking Works
@@ -56,11 +57,10 @@ const VanBookingProcess = () => {
         {/* PROCESS */}
         <Box
           sx={{
-            display: "flex",
+            display: "grid",
+            gridTemplateColumns: "repeat(5, 1fr)", // 🔑 one row always
             alignItems: "center",
-            justifyContent: "space-between",
-            flexWrap: "wrap",
-            gap: { xs: 4, md: 0 },
+            gap: { xs: 1.5, sm: 2, md: 0 },
             position: "relative",
           }}
         >
@@ -68,16 +68,15 @@ const VanBookingProcess = () => {
             <Box
               key={index}
               sx={{
-                width: { xs: "100%", sm: "18%" },
                 textAlign: "center",
                 position: "relative",
               }}
             >
-              {/* ICON CIRCLE */}
+              {/* ICON */}
               <Box
                 sx={{
-                  width: 90,
-                  height: 90,
+                  width: { xs: 56, sm: 68, md: 90 },
+                  height: { xs: 56, sm: 68, md: 90 },
                   mx: "auto",
                   borderRadius: "50%",
                   backgroundColor: "#E8F5E9",
@@ -95,17 +94,21 @@ const VanBookingProcess = () => {
                 <Box
                   component="img"
                   src={step.icon}
-                  sx={{ width: 42, height: 42 }}
+                  sx={{
+                    width: { xs: 22, sm: 26, md: 38 },
+                    height: "auto",
+                  }}
                 />
               </Box>
 
               {/* TEXT */}
               <Typography
                 sx={{
-                  mt: 2,
+                  mt: 1.2,
                   fontWeight: 600,
-                  fontSize: 15,
+                  fontSize: { xs: 11, sm: 13, md: 15 },
                   fontFamily: "Montserrat, sans-serif",
+                  lineHeight: 1.2,
                 }}
               >
                 {step.title}
@@ -116,12 +119,11 @@ const VanBookingProcess = () => {
                 <Box
                   sx={{
                     position: "absolute",
-                    top: 45,
-                    right: { sm: "-50%" },
-                    width: { sm: "100%" },
+                    top: { xs: 28, sm: 34, md: 45 },
+                    right: "-50%",
+                    width: "100%",
                     height: "2px",
                     borderTop: "2px dashed #A5D6A7",
-                    display: { xs: "none", sm: "block" },
                   }}
                 />
               )}
