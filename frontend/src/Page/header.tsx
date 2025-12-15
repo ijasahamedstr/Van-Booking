@@ -19,7 +19,7 @@ import { useNavigate } from "react-router-dom";
 
 /* ---------------- FONT ---------------- */
 
-const Montserrat = '"Montserrat", sans-serif';
+const CURSIVE = "cursive";
 
 /* ---------------- ICON IMAGES ---------------- */
 
@@ -41,8 +41,15 @@ export default function EtsyStyleHeader() {
   const logoUrl =
     "https://i.ibb.co/HppxBxgP/Gemini-Generated-Image-f3bp5nf3bp5nf3bp.png";
 
+  /* ---------------- HANDLERS ---------------- */
+
   const handleNavigate = (path: string) => {
     navigate(path);
+    setDrawerOpen(false);
+  };
+
+  const handleLogoClick = () => {
+    navigate("/");
     setDrawerOpen(false);
   };
 
@@ -63,9 +70,7 @@ export default function EtsyStyleHeader() {
     </Box>
   );
 
-  /* ---------------- COLORS ---------------- */
-
-  const headerBg = isMobile ? "#ffffff" : "#fbfcfc";
+  const headerBg = isMobile ? "#ffffff" : "#f9fafb";
   const drawerBg = isMobile ? "#ffffff" : "#fbfcfc";
 
   return (
@@ -79,24 +84,27 @@ export default function EtsyStyleHeader() {
           color: "#000",
           px: { xs: 3, sm: 6, md: 10 },
           mt: "55px",
-          fontFamily: Montserrat,
+          fontFamily: CURSIVE,
         }}
       >
         <Toolbar
           disableGutters
           sx={{
-            minHeight: { xs: 110, sm: 130, md: 150 }, // 🔥 taller header
+            minHeight: { xs: 110, sm: 130, md: 150 },
             justifyContent: "space-between",
             alignItems: "center",
+            fontFamily: CURSIVE,
           }}
         >
-          {/* -------- BIG LOGO (100% WIDTH & HEIGHT) -------- */}
+          {/* LOGO (CLICKABLE) */}
           <Box
+            onClick={handleLogoClick}
             sx={{
-              width: { xs: 240, sm: 320, md: 450 }, // 🔥 VERY BIG
+              width: { xs: 240, sm: 320, md: 450 },
               height: { xs: 90, sm: 110, md: 130 },
               display: "flex",
               alignItems: "center",
+              cursor: "pointer",
             }}
           >
             <Box
@@ -126,17 +134,20 @@ export default function EtsyStyleHeader() {
         PaperProps={{
           sx: {
             backgroundColor: drawerBg,
+            fontFamily: CURSIVE,
           },
         }}
       >
-        <Box sx={{ width: 300, py: 3, fontFamily: Montserrat }}>
-          {/* -------- BIG DRAWER LOGO -------- */}
+        <Box sx={{ width: 300, py: 3, fontFamily: CURSIVE }}>
+          {/* DRAWER LOGO (CLICKABLE) */}
           <Box
+            onClick={handleLogoClick}
             sx={{
               width: 320,
               height: 140,
               mx: "auto",
               mb: 3,
+              cursor: "pointer",
             }}
           >
             <Box
@@ -163,7 +174,7 @@ export default function EtsyStyleHeader() {
                   primaryTypographyProps={{
                     fontSize: 17,
                     fontWeight: 500,
-                    fontFamily: Montserrat,
+                    fontFamily: CURSIVE,
                   }}
                 />
               </ListItemButton>
@@ -177,7 +188,7 @@ export default function EtsyStyleHeader() {
                   primaryTypographyProps={{
                     fontSize: 17,
                     fontWeight: 500,
-                    fontFamily: Montserrat,
+                    fontFamily: CURSIVE,
                   }}
                 />
               </ListItemButton>
@@ -191,7 +202,7 @@ export default function EtsyStyleHeader() {
                   primaryTypographyProps={{
                     fontSize: 17,
                     fontWeight: 500,
-                    fontFamily: Montserrat,
+                    fontFamily: CURSIVE,
                   }}
                 />
               </ListItemButton>
@@ -211,7 +222,7 @@ export default function EtsyStyleHeader() {
               color: "#25D366",
               fontSize: 15,
               fontWeight: 500,
-              fontFamily: Montserrat,
+              fontFamily: CURSIVE,
               cursor: "pointer",
             }}
             onClick={() => window.open("https://wa.me/966XXXXXXXXX", "_blank")}

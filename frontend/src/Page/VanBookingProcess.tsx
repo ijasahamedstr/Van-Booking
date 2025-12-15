@@ -38,7 +38,13 @@ const steps = [
 
 const VanBookingProcess = () => {
   return (
-    <Box sx={{ py: { xs: 4, md: 8 }, backgroundColor: "#fff" }}>
+    <Box
+      sx={{
+        py: { xs: 4, md: 8 },
+        backgroundColor: "#fff",
+        fontFamily: "cursive", // ✅ GLOBAL FONT
+      }}
+    >
       <Container maxWidth="xl">
         {/* TITLE */}
         <Typography
@@ -47,8 +53,8 @@ const VanBookingProcess = () => {
           sx={{
             fontWeight: 700,
             mb: { xs: 4, md: 6 },
-            fontFamily: "Montserrat, sans-serif",
             textShadow: "0 2px 12px rgba(6,249,243,0.35)",
+            fontFamily: "cursive",
           }}
         >
           How Van Booking Works
@@ -58,7 +64,7 @@ const VanBookingProcess = () => {
         <Box
           sx={{
             display: "grid",
-            gridTemplateColumns: "repeat(5, 1fr)", // 🔑 one row always
+            gridTemplateColumns: "repeat(5, 1fr)",
             alignItems: "center",
             gap: { xs: 1.5, sm: 2, md: 0 },
             position: "relative",
@@ -107,8 +113,8 @@ const VanBookingProcess = () => {
                   mt: 1.2,
                   fontWeight: 600,
                   fontSize: { xs: 11, sm: 13, md: 15 },
-                  fontFamily: "Montserrat, sans-serif",
                   lineHeight: 1.2,
+                  fontFamily: "cursive",
                 }}
               >
                 {step.title}
