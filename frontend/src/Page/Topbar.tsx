@@ -36,8 +36,6 @@ const inquiryTypes = [
 const CURSIVE = "cursive";
 
 /* ---------------- CART KEYS ---------------- */
-const CART_KEY = "cartCourses";
-const OTT_CART_KEY = "ottCart";
 
 const Topbar: React.FC = () => {
   const theme = useTheme();
@@ -74,13 +72,6 @@ const Topbar: React.FC = () => {
     window.addEventListener("openInquiry", onOpenInquiry);
     return () => window.removeEventListener("openInquiry", onOpenInquiry);
   }, []);
-
-  const handleChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
-  ) => {
-    const { name, value } = e.target;
-    setFormData((prev) => ({ ...prev, [name]: value }));
-  };
 
   const resetForm = () => {
     setFormData({
