@@ -22,7 +22,6 @@ import {
   Facebook,
   Instagram,
   YouTube,
-  Close as CloseIcon,
 } from "@mui/icons-material";
 
 const inquiryTypes = [
@@ -34,8 +33,6 @@ const inquiryTypes = [
 
 /* ---------------- FONT ---------------- */
 const CURSIVE = "cursive";
-
-/* ---------------- CART KEYS ---------------- */
 
 const Topbar: React.FC = () => {
   const theme = useTheme();
@@ -133,7 +130,7 @@ ${formData.description || "N/A"}
 
   return (
     <>
-      {/* TOP BAR */}
+      {/* ================= TOP BAR ================= */}
       <Box
         sx={{
           width: "100%",
@@ -157,10 +154,9 @@ ${formData.description || "N/A"}
             color: "#fff",
             gap: 1,
             overflow: "hidden",
-            fontFamily: CURSIVE,
           }}
         >
-          <Typography sx={{ fontWeight: 600, whiteSpace: "nowrap", fontFamily: CURSIVE  }}>
+          <Typography sx={{ fontWeight: 600, whiteSpace: "nowrap" }}>
             Need Assistance? Contact Us:
           </Typography>
 
@@ -202,11 +198,13 @@ ${formData.description || "N/A"}
             justifyContent: "flex-end",
             px: 2,
             gap: 1,
-            fontFamily: CURSIVE,
           }}
         >
           {(isMobile || isTablet) && (
-            <IconButton onClick={() => setSocialDrawerOpen(true)} sx={{ color: "#fff" }}>
+            <IconButton
+              onClick={() => setSocialDrawerOpen(true)}
+              sx={{ color: "#fff" }}
+            >
               <WhatsApp />
             </IconButton>
           )}
@@ -229,7 +227,7 @@ ${formData.description || "N/A"}
         </Box>
       </Box>
 
-      {/* SOCIAL DRAWER */}
+      {/* ================= SOCIAL DRAWER ================= */}
       <Drawer
         anchor="right"
         open={socialDrawerOpen}
@@ -247,6 +245,7 @@ ${formData.description || "N/A"}
         <Typography fontWeight={600} mb={2}>
           Follow us
         </Typography>
+
         {[WhatsApp, Facebook, Instagram, YouTube].map((Icon, i) => (
           <Button
             key={i}
@@ -263,7 +262,7 @@ ${formData.description || "N/A"}
         ))}
       </Drawer>
 
-      {/* MODAL */}
+      {/* ================= MODAL ================= */}
       <Modal open={open} onClose={handleClose}>
         <Box
           sx={{
@@ -282,16 +281,10 @@ ${formData.description || "N/A"}
             Inquiry Form
           </Typography>
 
-          <TextField fullWidth label="Name" name="name" {...textFieldCommon} />
-          <TextField fullWidth label="Mobile" name="mobile" {...textFieldCommon} />
+          <TextField fullWidth label="Name" {...textFieldCommon} />
+          <TextField fullWidth label="Mobile" {...textFieldCommon} />
 
-          <TextField
-            fullWidth
-            select
-            label="Inquiry Type"
-            name="type"
-            {...textFieldCommon}
-          >
+          <TextField fullWidth select label="Inquiry Type" {...textFieldCommon}>
             {inquiryTypes.map((o) => (
               <MenuItem key={o.value} value={o.value} sx={{ fontFamily: CURSIVE }}>
                 {o.label}
@@ -304,7 +297,6 @@ ${formData.description || "N/A"}
             multiline
             rows={3}
             label="Description"
-            name="description"
             {...textFieldCommon}
           />
 
@@ -319,6 +311,7 @@ ${formData.description || "N/A"}
         </Box>
       </Modal>
 
+      {/* ================= SNACKBAR ================= */}
       <Snackbar
         open={snackbar.open}
         autoHideDuration={4000}
