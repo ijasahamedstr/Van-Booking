@@ -1,3 +1,4 @@
+import Footer from "./Page/Footer";
 import Header from "./Page/header"
 import Home from "./Page/Home";
 import Topbar from "./Page/Topbar"
@@ -16,6 +17,7 @@ function App() {
         <Route path="/van-booking" element={<div>Van Booking Page</div>} />
         <Route path="/special-request" element={<div>Special Request Page</div>} />
       </Routes>
+      <Footer/>
     </BrowserRouter>
     </>
   )

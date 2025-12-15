@@ -52,15 +52,15 @@ const ServiceCard = ({
   onClick,
 }: ServiceCardProps) => {
   return (
-    <Box sx={{ position: "relative", pt: 14 }}>
+    <Box sx={{ position: "relative", pt: 14, fontFamily: CURSIVE }}>
       {/* EXTRA WIDE 3D IMAGE */}
       <Box
         component="img"
         src={image}
         alt={title}
         sx={{
-          width: 220,        // 👈 MORE WIDTH
-          height: "auto",    // 👈 KEEP RATIO
+          width: 220,
+          height: "auto",
           maxWidth: "90%",
           position: "absolute",
           top: 0,
@@ -89,20 +89,40 @@ const ServiceCard = ({
             pb: 4,
             px: 3,
             textAlign: "center",
+            fontFamily: CURSIVE,
             "&:active": {
               animation: `${tap} .12s ease-in-out`,
             },
           }}
         >
-          <Typography fontWeight={900} fontSize={19}>
+          <Typography
+            sx={{
+              fontFamily: CURSIVE,
+              fontWeight: 900,
+              fontSize: 19,
+            }}
+          >
             {title}
           </Typography>
 
-          <Typography fontSize={14} sx={{ opacity: 0.9, mt: 0.8 }}>
+          <Typography
+            sx={{
+              fontFamily: CURSIVE,
+              fontSize: 14,
+              opacity: 0.9,
+              mt: 0.8,
+            }}
+          >
             {subtitle}
           </Typography>
 
-          <Typography fontSize={26} sx={{ mt: 1.2 }}>
+          <Typography
+            sx={{
+              fontFamily: CURSIVE,
+              fontSize: 26,
+              mt: 1.2,
+            }}
+          >
             →
           </Typography>
         </CardActionArea>
@@ -116,7 +136,7 @@ const ServiceCard = ({
 const ServiceCards: React.FC = () => {
   return (
     <Box sx={{ py: 8, fontFamily: CURSIVE }}>
-      <Container maxWidth="lg">
+      <Container maxWidth="lg" sx={{ fontFamily: CURSIVE }}>
         <Box
           sx={{
             display: "grid",
@@ -126,6 +146,7 @@ const ServiceCards: React.FC = () => {
               md: "repeat(3, 1fr)",
             },
             gap: 6,
+            fontFamily: CURSIVE,
           }}
         >
           <ServiceCard
