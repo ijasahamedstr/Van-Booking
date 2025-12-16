@@ -21,13 +21,14 @@ const requestTypes = [
   "Van For Event Booking",
   "Cancel Full Booking",
   "Cancel Seat Booking",
+  "Emergency Service", // ✅ NEW
 ];
 
 /* ---------------- VAN LIST ---------------- */
 const vans = ["Luxury Van", "Executive Van", "Mini Van"];
 
 /* ---------------- ADMIN WHATSAPP ---------------- */
-const ADMIN_WHATSAPP = "966594796823"; // ✅ Saudi number (no spaces)
+const ADMIN_WHATSAPP = "966594796823";
 
 const RequestForm: React.FC = () => {
   const [form, setForm] = useState({
@@ -38,6 +39,8 @@ const RequestForm: React.FC = () => {
     van: "",
     seatNumber: "",
     description: "",
+    emergencyReason: "", // ✅ NEW
+    emergencyArea: "", // ✅ NEW
   });
 
   /* ---------------- HANDLE CHANGE ---------------- */
@@ -57,6 +60,8 @@ const RequestForm: React.FC = () => {
     form.requestType === "Cancel Full Booking";
   const isCancelSeat =
     form.requestType === "Cancel Seat Booking";
+  const isEmergency =
+    form.requestType === "Emergency Service"; // ✅ NEW
 
   const showDate =
     isFullBooking || isEventBooking || isCancelFull || isCancelSeat;
@@ -66,14 +71,22 @@ const RequestForm: React.FC = () => {
   /* ---------------- WHATSAPP ---------------- */
   const openWhatsApp = () => {
     const message = `
-*New Inquiry Received*
+*🚨 New Inquiry Received 🚨*
 
 *Name:* ${form.customerName || "N/A"}
 *Mobile:* ${form.mobileNumber || "N/A"}
-*Inquiry Type:* ${form.requestType || "N/A"}
-*Booking Date:* ${form.bookingDate || "N/A"}
-*Van:* ${form.van || "N/A"}
+*Request Type:* ${form.requestType || "N/A"}
+
+${showDate ? `*Booking Date:* ${form.bookingDate || "N/A"}` : ""}
+${showVan ? `*Van:* ${form.van || "N/A"}` : ""}
 ${form.seatNumber ? `*Seat Number:* ${form.seatNumber}` : ""}
+
+${
+  isEmergency
+    ? `*Emergency Reason:* ${form.emergencyReason || "N/A"}
+*Area / City:* ${form.emergencyArea || "N/A"}`
+    : ""
+}
 
 *Description:*
 ${form.description || "N/A"}
@@ -115,10 +128,8 @@ _Sent via Van Request Form_
         timer: 2000,
       });
 
-      // ✅ Send WhatsApp AFTER DB save
       openWhatsApp();
 
-      // ✅ Reset form
       setForm({
         customerName: "",
         mobileNumber: "",
@@ -127,6 +138,8 @@ _Sent via Van Request Form_
         van: "",
         seatNumber: "",
         description: "",
+        emergencyReason: "",
+        emergencyArea: "",
       });
     } catch (error) {
       Swal.fire({
@@ -218,7 +231,6 @@ _Sent via Van Request Form_
               value={form.bookingDate}
               onChange={handleChange}
               margin="normal"
-              InputProps={{ sx: fieldStyle }}
               InputLabelProps={{ shrink: true, sx: fieldStyle }}
             />
           )}
@@ -252,8 +264,32 @@ _Sent via Van Request Form_
               onChange={handleChange}
               margin="normal"
               InputProps={{ sx: fieldStyle }}
-              InputLabelProps={{ sx: fieldStyle }}
             />
+          )}
+
+          {/* ✅ EMERGENCY FIELDS */}
+          {isEmergency && (
+            <>
+              <TextField
+                fullWidth
+                label="Emergency Reason"
+                name="emergencyReason"
+                value={form.emergencyReason}
+                onChange={handleChange}
+                margin="normal"
+                InputProps={{ sx: fieldStyle }}
+              />
+
+              <TextField
+                fullWidth
+                label="Area / City"
+                name="emergencyArea"
+                value={form.emergencyArea}
+                onChange={handleChange}
+                margin="normal"
+                InputProps={{ sx: fieldStyle }}
+              />
+            </>
           )}
 
           <TextField
@@ -266,7 +302,6 @@ _Sent via Van Request Form_
             onChange={handleChange}
             margin="normal"
             InputProps={{ sx: fieldStyle }}
-            InputLabelProps={{ sx: fieldStyle }}
           />
 
           <Button
