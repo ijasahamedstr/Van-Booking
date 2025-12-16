@@ -5,8 +5,6 @@ const InquirySchema = new mongoose.Schema({
     name: String,
     mobile: String,
     inquirytype: String,
-    ordernumber: String,
-    orderdate: String,
     description: String,
     date: String,
 });

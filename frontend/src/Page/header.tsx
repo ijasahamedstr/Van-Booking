@@ -112,7 +112,6 @@ export default function EtsyStyleHeader() {
               src={logoUrl}
               alt="Logo"
               sx={{
-                width: "100%",
                 height: "100%",
                 objectFit: "contain",
               }}

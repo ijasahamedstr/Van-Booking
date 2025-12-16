@@ -3,6 +3,8 @@ import Header from "./Page/header"
 import Home from "./Page/Home";
 import Topbar from "./Page/Topbar"
 import { BrowserRouter, Routes, Route } from "react-router-dom";
+import VanCards from "./Page/All-Van-Details ";
+import Specialrequest from "./Page/Specialrequest";
 
 function App() {
 
@@ -13,9 +15,9 @@ function App() {
       <Header/>
       <Routes>
         <Route path="/" element={<Home/>} />
-        <Route path="/van-details" element={<div>Van Details Page</div>} />
+        <Route path="/van-details" element={<VanCards/>} />
         <Route path="/van-booking" element={<div>Van Booking Page</div>} />
-        <Route path="/special-request" element={<div>Special Request Page</div>} />
+        <Route path="/special-request" element={<Specialrequest/>} />
       </Routes>
       <Footer/>
     </BrowserRouter>

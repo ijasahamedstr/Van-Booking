@@ -9,8 +9,6 @@ export const Inquirycreate = async (req, res) => {
     name,
     mobile,
     inquirytype,
-    ordernumber,
-    orderdate,
     description,
   } = req.body;
 
@@ -29,8 +27,6 @@ export const Inquirycreate = async (req, res) => {
       name,
       mobile,
       inquirytype,
-      ordernumber: ordernumber || "",
-      orderdate: orderdate || "",
       description: description || "",
       date,
     });

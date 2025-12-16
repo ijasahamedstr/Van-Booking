@@ -25,7 +25,7 @@ const steps = [
     icon: "https://cdn-icons-png.flaticon.com/512/747/747310.png",
   },
   {
-    title: "Confirm Booking",
+    title: "Booking",
     icon: "https://cdn-icons-png.flaticon.com/512/942/942748.png",
   },
   {
@@ -40,7 +40,8 @@ const VanBookingProcess = () => {
   return (
     <Box
       sx={{
-        py: { xs: 5, md: 7 },
+        pt: { xs: 5, md: 7 }, // ✅ keep top padding
+        pb: 0,               // ✅ bottom padding removed
         background: "#fff",
         fontFamily: TAJAWAL,
       }}
@@ -59,7 +60,7 @@ const VanBookingProcess = () => {
           How Van Booking Works
         </Typography>
 
-        {/* ONE ROW */}
+        {/* STEPS ROW */}
         <Box
           sx={{
             display: "grid",
@@ -78,7 +79,7 @@ const VanBookingProcess = () => {
                 fontFamily: TAJAWAL,
               }}
             >
-              {/* 3D ICON CARD */}
+              {/* ICON CARD */}
               <Box
                 sx={{
                   width: { xs: 58, sm: 64, md: 82, lg: 90 },
@@ -132,25 +133,59 @@ const VanBookingProcess = () => {
                 <Box
                   sx={{
                     position: "absolute",
-                    top: "38%",
-                    right: { xs: -12, sm: -18, md: -28, lg: -36 },
-                    width: { xs: 24, sm: 34, md: 56, lg: 70 },
-                    height: 3,
-                    background:
-                      "linear-gradient(90deg, #0f766e, #06f9f3)",
-                    borderRadius: 10,
-                    boxShadow: "0 4px 10px rgba(0,0,0,0.2)",
-                    "&::after": {
-                      content: '""',
-                      position: "absolute",
-                      right: -10,
-                      top: -6,
-                      borderLeft: "12px solid #06f9f3",
-                      borderTop: "7px solid transparent",
-                      borderBottom: "7px solid transparent",
+                    top: "40%",
+                    right: { xs: -14, sm: -22, md: -34, lg: -42 },
+                    display: "flex",
+                    alignItems: "center",
+                    animation: "pulse 2.5s ease-in-out infinite",
+                    "@keyframes pulse": {
+                      "0%": {
+                        opacity: 0.7,
+                        transform: "scaleX(1)",
+                      },
+                      "50%": {
+                        opacity: 1,
+                        transform: "scaleX(1.05)",
+                      },
+                      "100%": {
+                        opacity: 0.7,
+                        transform: "scaleX(1)",
+                      },
                     },
                   }}
-                />
+                >
+                  {/* LINE */}
+                  <Box
+                    sx={{
+                      width: {
+                        xs: 22,
+                        sm: 34,
+                        md: 56,
+                        lg: 70,
+                      },
+                      height: 4,
+                      borderRadius: 10,
+                      background:
+                        "linear-gradient(90deg, rgba(6,249,243,0.25), #06f9f3, #0f766e)",
+                      boxShadow:
+                        "0 0 14px rgba(6,249,243,0.8)",
+                      backdropFilter: "blur(6px)",
+                    }}
+                  />
+
+                  {/* ARROW HEAD */}
+                  <Box
+                    sx={{
+                      width: 0,
+                      height: 0,
+                      borderTop: "7px solid transparent",
+                      borderBottom: "7px solid transparent",
+                      borderLeft: "12px solid #06f9f3",
+                      filter:
+                        "drop-shadow(0 0 6px rgba(6,249,243,0.9))",
+                    }}
+                  />
+                </Box>
               )}
             </Box>
           ))}
