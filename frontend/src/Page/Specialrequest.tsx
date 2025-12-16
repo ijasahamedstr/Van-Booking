@@ -21,7 +21,7 @@ const requestTypes = [
   "Van For Event Booking",
   "Cancel Full Booking",
   "Cancel Seat Booking",
-  "Emergency Service", // ✅ NEW
+  "Emergency Service",
 ];
 
 /* ---------------- VAN LIST ---------------- */
@@ -29,6 +29,20 @@ const vans = ["Luxury Van", "Executive Van", "Mini Van"];
 
 /* ---------------- ADMIN WHATSAPP ---------------- */
 const ADMIN_WHATSAPP = "966594796823";
+
+/* ---------------- FIELD STYLE ---------------- */
+const fieldSx = {
+  fontFamily: CURSIVE_FONT,
+  "& .MuiInputBase-input": {
+    fontFamily: CURSIVE_FONT,
+  },
+  "& .MuiInputLabel-root": {
+    fontFamily: CURSIVE_FONT,
+  },
+  "& .MuiSelect-select": {
+    fontFamily: CURSIVE_FONT,
+  },
+};
 
 const RequestForm: React.FC = () => {
   const [form, setForm] = useState({
@@ -39,8 +53,8 @@ const RequestForm: React.FC = () => {
     van: "",
     seatNumber: "",
     description: "",
-    emergencyReason: "", // ✅ NEW
-    emergencyArea: "", // ✅ NEW
+    emergencyReason: "",
+    emergencyArea: "",
   });
 
   /* ---------------- HANDLE CHANGE ---------------- */
@@ -61,7 +75,7 @@ const RequestForm: React.FC = () => {
   const isCancelSeat =
     form.requestType === "Cancel Seat Booking";
   const isEmergency =
-    form.requestType === "Emergency Service"; // ✅ NEW
+    form.requestType === "Emergency Service";
 
   const showDate =
     isFullBooking || isEventBooking || isCancelFull || isCancelSeat;
@@ -71,34 +85,31 @@ const RequestForm: React.FC = () => {
   /* ---------------- WHATSAPP ---------------- */
   const openWhatsApp = () => {
     const message = `
-*🚨 New Inquiry Received 🚨*
+🚨 New Inquiry 🚨
 
-*Name:* ${form.customerName || "N/A"}
-*Mobile:* ${form.mobileNumber || "N/A"}
-*Request Type:* ${form.requestType || "N/A"}
+Name: ${form.customerName}
+Mobile: ${form.mobileNumber}
+Type: ${form.requestType}
 
-${showDate ? `*Booking Date:* ${form.bookingDate || "N/A"}` : ""}
-${showVan ? `*Van:* ${form.van || "N/A"}` : ""}
-${form.seatNumber ? `*Seat Number:* ${form.seatNumber}` : ""}
+${showDate ? `Booking Date: ${form.bookingDate}` : ""}
+${showVan ? `Van: ${form.van}` : ""}
+${form.seatNumber ? `Seat Number: ${form.seatNumber}` : ""}
 
 ${
   isEmergency
-    ? `*Emergency Reason:* ${form.emergencyReason || "N/A"}
-*Area / City:* ${form.emergencyArea || "N/A"}`
+    ? `Emergency Reason: ${form.emergencyReason}
+Area / City: ${form.emergencyArea}`
     : ""
 }
 
-*Description:*
-${form.description || "N/A"}
-
-_Sent via Van Request Form_
+Description:
+${form.description}
     `;
 
-    const url = `https://wa.me/${ADMIN_WHATSAPP}?text=${encodeURIComponent(
-      message
-    )}`;
-
-    window.open(url, "_blank");
+    window.open(
+      `https://wa.me/${ADMIN_WHATSAPP}?text=${encodeURIComponent(message)}`,
+      "_blank"
+    );
   };
 
   /* ---------------- SUBMIT ---------------- */
@@ -110,22 +121,12 @@ _Sent via Van Request Form_
         body: JSON.stringify(form),
       });
 
-      const data = await resp.json();
-      if (!resp.ok) throw new Error(data.message);
+      if (!resp.ok) throw new Error();
 
       await Swal.fire({
         icon: "success",
         title: "Request Submitted",
-        text: "Your request has been saved successfully.",
-        confirmButtonColor: "#4CAF50",
-      });
-
-      Swal.fire({
-        icon: "info",
-        title: "Please Wait",
-        text: "Customer waiting for admin reply ⏳",
-        showConfirmButton: false,
-        timer: 2000,
+        text: "Your request has been sent successfully",
       });
 
       openWhatsApp();
@@ -141,16 +142,14 @@ _Sent via Van Request Form_
         emergencyReason: "",
         emergencyArea: "",
       });
-    } catch (error) {
+    } catch {
       Swal.fire({
         icon: "error",
         title: "Submission Failed",
-        text: "Request not saved. WhatsApp not sent.",
+        text: "Please try again",
       });
     }
   };
-
-  const fieldStyle = { fontFamily: CURSIVE_FONT };
 
   return (
     <Box
@@ -189,8 +188,7 @@ _Sent via Van Request Form_
             value={form.customerName}
             onChange={handleChange}
             margin="normal"
-            InputProps={{ sx: fieldStyle }}
-            InputLabelProps={{ sx: fieldStyle }}
+            sx={fieldSx}
           />
 
           <TextField
@@ -200,8 +198,7 @@ _Sent via Van Request Form_
             value={form.mobileNumber}
             onChange={handleChange}
             margin="normal"
-            InputProps={{ sx: fieldStyle }}
-            InputLabelProps={{ sx: fieldStyle }}
+            sx={fieldSx}
           />
 
           <TextField
@@ -212,11 +209,10 @@ _Sent via Van Request Form_
             value={form.requestType}
             onChange={handleChange}
             margin="normal"
-            InputProps={{ sx: fieldStyle }}
-            InputLabelProps={{ sx: fieldStyle }}
+            sx={fieldSx}
           >
             {requestTypes.map((type) => (
-              <MenuItem key={type} value={type} sx={fieldStyle}>
+              <MenuItem key={type} value={type} sx={{ fontFamily: CURSIVE_FONT }}>
                 {type}
               </MenuItem>
             ))}
@@ -231,7 +227,8 @@ _Sent via Van Request Form_
               value={form.bookingDate}
               onChange={handleChange}
               margin="normal"
-              InputLabelProps={{ shrink: true, sx: fieldStyle }}
+              sx={fieldSx}
+              InputLabelProps={{ shrink: true }}
             />
           )}
 
@@ -244,11 +241,10 @@ _Sent via Van Request Form_
               value={form.van}
               onChange={handleChange}
               margin="normal"
-              InputProps={{ sx: fieldStyle }}
-              InputLabelProps={{ sx: fieldStyle }}
+              sx={fieldSx}
             >
               {vans.map((van) => (
-                <MenuItem key={van} value={van} sx={fieldStyle}>
+                <MenuItem key={van} value={van} sx={{ fontFamily: CURSIVE_FONT }}>
                   {van}
                 </MenuItem>
               ))}
@@ -263,11 +259,10 @@ _Sent via Van Request Form_
               value={form.seatNumber}
               onChange={handleChange}
               margin="normal"
-              InputProps={{ sx: fieldStyle }}
+              sx={fieldSx}
             />
           )}
 
-          {/* ✅ EMERGENCY FIELDS */}
           {isEmergency && (
             <>
               <TextField
@@ -277,7 +272,7 @@ _Sent via Van Request Form_
                 value={form.emergencyReason}
                 onChange={handleChange}
                 margin="normal"
-                InputProps={{ sx: fieldStyle }}
+                sx={fieldSx}
               />
 
               <TextField
@@ -287,7 +282,7 @@ _Sent via Van Request Form_
                 value={form.emergencyArea}
                 onChange={handleChange}
                 margin="normal"
-                InputProps={{ sx: fieldStyle }}
+                sx={fieldSx}
               />
             </>
           )}
@@ -301,7 +296,7 @@ _Sent via Van Request Form_
             value={form.description}
             onChange={handleChange}
             margin="normal"
-            InputProps={{ sx: fieldStyle }}
+            sx={fieldSx}
           />
 
           <Button
@@ -312,6 +307,7 @@ _Sent via Van Request Form_
               mt: 3,
               fontFamily: CURSIVE_FONT,
               fontSize: 18,
+              textTransform: "none",
             }}
             onClick={handleSubmit}
           >
