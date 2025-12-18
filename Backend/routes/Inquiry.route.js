@@ -1,16 +1,18 @@
 import express from 'express';
-import { Inquirycreate, InquiryIndex, InquirySingleDetails } from '../controller/Inquiry.Controller.js';
+import { createInquiry, getInquiries, InquirySingleDetails, replyInquiry } from '../controller/Inquiry.Controller.js';
 
 // Create a new router instance
 const Inquirysection = express.Router();
 // Create the Data Register
-Inquirysection.post('/',Inquirycreate );
+Inquirysection.post('/',createInquiry );
 
 // // View the Data Register
-Inquirysection.get('/',InquiryIndex);
+Inquirysection.get('/',getInquiries);
 
 // // View the Single Data Register
 Inquirysection.get("/:id",InquirySingleDetails);
+
+Inquirysection.post("/reply",replyInquiry); 
 
 
 

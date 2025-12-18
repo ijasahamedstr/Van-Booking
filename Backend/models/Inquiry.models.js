@@ -6,6 +6,10 @@ const InquirySchema = new mongoose.Schema({
     mobile: String,
     inquirytype: String,
     description: String,
+     adminReply: {
+      type: String,
+      default: "",
+    },
     date: String,
 });
 

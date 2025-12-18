@@ -1,63 +1,45 @@
-import moment from 'moment';
 import Inquiry from '../models/Inquiry.models.js';
 
 
-//  inquiry Create
-
-export const Inquirycreate = async (req, res) => {
-  const {
-    name,
-    mobile,
-    inquirytype,
-    description,
-  } = req.body;
-
-  // Input validation
-  if (!name || !mobile || !inquirytype) {
-    return res.status(400).json({
-      status: 400,
-      message: "Name, mobile and inquiry type are required.",
-    });
-  }
-
+export const getInquiries = async (req, res) => {
   try {
-    const date = moment().format("YYYY-MM-DD");
-
-    const newInquiry = new Inquiry({
-      name,
-      mobile,
-      inquirytype,
-      description: description || "",
-      date,
-    });
-
-    const savedInquiry = await newInquiry.save();
-
-    res.status(201).json({
-      status: 201,
-      message: "Inquiry created successfully.",
-      data: savedInquiry,
-    });
+    const inquiries = await Inquiry.find().sort({ createdAt: -1 });
+    res.json(inquiries);
   } catch (error) {
-    console.error("Error creating inquiry:", error);
-    res.status(500).json({
-      status: 500,
-      message: "Internal server error. Could not create the inquiry.",
-      error: error.message,
-    });
+    res.status(500).json({ message: "Failed to fetch inquiries" });
   }
 };
 
+// CREATE inquiry (from website / form)
+export const createInquiry = async (req, res) => {
+  try {
+    const inquiry = new Inquiry(req.body);
+    await inquiry.save();
+    res.status(201).json(inquiry);
+  } catch (error) {
+    res.status(400).json({ message: "Failed to create inquiry" });
+  }
+};
 
-// All inquiry View 
-export const InquiryIndex = async (req, res) => {
-    try {
-        const Inquiryview = await Inquiry.find();
-        res.json(Inquiryview);
-    } catch (error) {
-        res.status(500).json({ message: error.message });
+// SAVE admin reply (NO WhatsApp sending here)
+export const replyInquiry = async (req, res) => {
+  try {
+    const { inquiryId, message } = req.body;
+
+    const inquiry = await Inquiry.findById(inquiryId);
+    if (!inquiry) {
+      return res.status(404).json({ message: "Inquiry not found" });
     }
-  };
+
+    inquiry.adminReply = message;
+    inquiry.repliedAt = new Date();
+    await inquiry.save();
+
+    res.json({ success: true, message: "Reply saved successfully" });
+  } catch (error) {
+    res.status(500).json({ message: "Failed to save reply" });
+  }
+};
 
 // single inquiry View 
 export const  InquirySingleDetails = async (req, res) => {

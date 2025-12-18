@@ -1,344 +1,162 @@
+import React, { useEffect, useState } from "react";
 import Grid from "@mui/material/Grid";
 import MDBox from "components/MDBox";
 import DashboardLayout from "examples/LayoutContainers/DashboardLayout";
 import DashboardNavbar from "examples/Navbars/DashboardNavbar";
-import ComplexStatisticsCard from "examples/Cards/StatisticsCards/ComplexStatisticsCard";
-import React, { useState, useEffect } from "react";
+import MDTypography from "components/MDTypography";
+
+/* ================= CARD STYLE ================= */
+const cardStyle = {
+  borderRadius: "22px",
+  overflow: "hidden",
+  background: "#ffffff",
+  boxShadow: "0 10px 35px rgba(0,0,0,0.12)",
+  transition: "all 0.35s ease",
+  "&:hover": {
+    transform: "translateY(-10px)",
+    boxShadow: "0 20px 55px rgba(0,0,0,0.25)",
+  },
+};
+
+/* ================= IMAGE CONTAINER ================= */
+const imageWrapper = {
+  height: {
+    xs: 220,
+    md: 260,
+    lg: 300, // 🔥 BIGGER HEIGHT
+  },
+  display: "flex",
+  alignItems: "center",
+  justifyContent: "center",
+  background: "#f8f9fa",
+};
+
+/* ================= IMAGE STYLE ================= */
+const imageSx = {
+  maxWidth: "85%",
+  maxHeight: "85%",
+  objectFit: "contain", // ✅ IMPORTANT
+};
+
+/* ================= CONTENT STYLE ================= */
+const contentStyle = {
+  p: 2.5,
+  textAlign: "center",
+};
 
 function Dashboard() {
-  const [Promotionalgifts, setPromotionalgifts] = useState([]);
-  const [Printingdepartment, setPrintingdepartment] = useState([]);
-  const [Screensdepartment, setScreensdepartment] = useState([]);
-  const [ArabicCalligraphy, setArabicCalligraphy] = useState([]);
-  const [Socialmedia, setSocialmedia] = useState([]);
-  const [MediaCommunicationsphoto, setMediaCommunicationsphoto] = useState([]);
-  const [MediaCommunicationsvideo, setMediaCommunicationsvideo] = useState([]);
-  const [News, setNews] = useState([]);
-  const [Partner, setPartner] = useState([]);
+  const [vanSection, setVanSection] = useState([]);
+  const [vanBooking, setVanBooking] = useState([]);
+  const [vanBookingRequest, setVanBookingRequest] = useState([]);
+  const [inquireSection, setInquireSection] = useState([]);
 
   useEffect(() => {
-    // Fetch data from the API (replace with your actual API endpoint)
-    fetch(`${process.env.REACT_APP_API_HOST}/Promotionalgifts`)
-      .then((response) => response.json())
-      .then((data) => {
-        setPromotionalgifts(data); // Store the fetched data in the state
-      })
-      .catch((error) => {
-        console.error("Error fetching data:", error);
-      });
+    fetch(`${process.env.REACT_APP_API_HOST}/VanSection`)
+      .then((res) => res.json())
+      .then(setVanSection);
   }, []);
 
   useEffect(() => {
-    // Fetch data from the API (replace with your actual API endpoint)
-    fetch(`${process.env.REACT_APP_API_HOST}/Printingdepartment`)
-      .then((response) => response.json())
-      .then((data) => {
-        setPrintingdepartment(data); // Store the fetched data in the state
-      })
-      .catch((error) => {
-        console.error("Error fetching data:", error);
-      });
+    fetch(`${process.env.REACT_APP_API_HOST}/VanBooking`)
+      .then((res) => res.json())
+      .then(setVanBooking);
   }, []);
 
   useEffect(() => {
-    // Fetch data from the API (replace with your actual API endpoint)
-    fetch(`${process.env.REACT_APP_API_HOST}/Screensdepartment`)
-      .then((response) => response.json())
-      .then((data) => {
-        setScreensdepartment(data); // Store the fetched data in the state
-      })
-      .catch((error) => {
-        console.error("Error fetching data:", error);
-      });
+    fetch(`${process.env.REACT_APP_API_HOST}/VanBookingSpecialRequest`)
+      .then((res) => res.json())
+      .then(setVanBookingRequest);
   }, []);
 
   useEffect(() => {
-    // Fetch data from the API (replace with your actual API endpoint)
-    fetch(`${process.env.REACT_APP_API_HOST}/ArabicCalligraphy`)
-      .then((response) => response.json())
-      .then((data) => {
-        setArabicCalligraphy(data); // Store the fetched data in the state
-      })
-      .catch((error) => {
-        console.error("Error fetching data:", error);
-      });
-  }, []);
-
-  useEffect(() => {
-    // Fetch data from the API (replace with your actual API endpoint)
-    fetch(`${process.env.REACT_APP_API_HOST}/Socialmedia`)
-      .then((response) => response.json())
-      .then((data) => {
-        setSocialmedia(data); // Store the fetched data in the state
-      })
-      .catch((error) => {
-        console.error("Error fetching data:", error);
-      });
-  }, []);
-
-  useEffect(() => {
-    // Fetch data from the API (replace with your actual API endpoint)
-    fetch(`${process.env.REACT_APP_API_HOST}/MediaCommunicationsphoto`)
-      .then((response) => response.json())
-      .then((data) => {
-        setMediaCommunicationsphoto(data); // Store the fetched data in the state
-      })
-      .catch((error) => {
-        console.error("Error fetching data:", error);
-      });
-  }, []);
-
-  useEffect(() => {
-    // Fetch data from the API (replace with your actual API endpoint)
-    fetch(`${process.env.REACT_APP_API_HOST}/MediaCommunicationsvideo`)
-      .then((response) => response.json())
-      .then((data) => {
-        setMediaCommunicationsvideo(data); // Store the fetched data in the state
-      })
-      .catch((error) => {
-        console.error("Error fetching data:", error);
-      });
-  }, []);
-
-  useEffect(() => {
-    // Fetch data from the API (replace with your actual API endpoint)
-    fetch(`${process.env.REACT_APP_API_HOST}/News`)
-      .then((response) => response.json())
-      .then((data) => {
-        setNews(data); // Store the fetched data in the state
-      })
-      .catch((error) => {
-        console.error("Error fetching data:", error);
-      });
-  }, []);
-
-  useEffect(() => {
-    // Fetch data from the API (replace with your actual API endpoint)
-    fetch(`${process.env.REACT_APP_API_HOST}/Partner`)
-      .then((response) => response.json())
-      .then((data) => {
-        setPartner(data); // Store the fetched data in the state
-      })
-      .catch((error) => {
-        console.error("Error fetching data:", error);
-      });
+    fetch(`${process.env.REACT_APP_API_HOST}/Inquire`)
+      .then((res) => res.json())
+      .then(setInquireSection);
   }, []);
 
   return (
     <DashboardLayout>
       <DashboardNavbar />
+
       <MDBox py={3}>
         <Grid container spacing={3}>
-          {/* Promotional gifts section */}
+          {/* ================= VAN SECTION ================= */}
           <Grid item xs={12} md={6} lg={3}>
-            <MDBox mb={1.5}>
-              <ComplexStatisticsCard
-                title="Promotional gifts section"
-                count={Promotionalgifts.length} // Set the count to 0 or dynamic if required
-                color="primary"
-                sx={{ fontSize: "1.2rem" }} // Setting font size for the count text
-                icon={
-                  <img
-                    src="https://i.ibb.co/HdgVtF5/image.webp"
-                    alt="Promotional Gifts"
-                    style={{ width: "40px", height: "40px", objectFit: "cover" }} // Set size and fit the image
-                  />
-                }
-              />
+            <MDBox sx={cardStyle}>
+              <MDBox sx={imageWrapper}>
+                <MDBox
+                  component="img"
+                  src="https://i.ibb.co/Wv2z7Jd0/Gemini-Generated-Image-1ltd7r1ltd7r1ltd-removebg-preview.png"
+                  alt="Van Section"
+                  sx={imageSx}
+                />
+              </MDBox>
+              <MDBox sx={contentStyle}>
+                <MDTypography variant="h6">Van Section</MDTypography>
+                <MDTypography variant="h3" color="primary">
+                  {vanSection.length}
+                </MDTypography>
+              </MDBox>
             </MDBox>
           </Grid>
 
-          {/* Printing section */}
+          {/* ================= VAN BOOKING ================= */}
           <Grid item xs={12} md={6} lg={3}>
-            <MDBox mb={1.5}>
-              <ComplexStatisticsCard
-                // Replacing icon with an image
-                icon={
-                  <img
-                    src="https://i.ibb.co/dmvyMMn/image-1.webp"
-                    alt="Printing"
-                    style={{ width: "40px", height: "40px", objectFit: "cover" }}
-                  />
-                }
-                title="Printing section"
-                count={Printingdepartment.length}
-                color="warning"
-                sx={{ fontSize: "1.2rem" }} // Setting font size for the count text
-              />
+            <MDBox sx={cardStyle}>
+              <MDBox sx={imageWrapper}>
+                <MDBox
+                  component="img"
+                  src="https://i.ibb.co/hxChYFH9/istockphoto-1742244777-612x612-removebg-preview.png"
+                  alt="Van Booking"
+                  sx={imageSx}
+                />
+              </MDBox>
+              <MDBox sx={contentStyle}>
+                <MDTypography variant="h6">Van Booking</MDTypography>
+                <MDTypography variant="h3" color="success">
+                  {vanBooking.length}
+                </MDTypography>
+              </MDBox>
             </MDBox>
           </Grid>
 
-          {/* Department of Fine Arts section */}
+          {/* ================= SPECIAL REQUEST ================= */}
           <Grid item xs={12} md={6} lg={3}>
-            <MDBox mb={1.5}>
-              <ComplexStatisticsCard
-                // Replacing icon with an image
-                icon={
-                  <img
-                    src="https://i.ibb.co/LP17MwP/image-6.webp"
-                    alt="Fine Arts"
-                    style={{ width: "40px", height: "40px", objectFit: "cover" }}
-                  />
-                }
-                color="success"
-                title="Department of Fine Arts section"
-                count="0"
-                sx={{ fontSize: "1.2rem" }} // Setting font size for the count text
-              />
+            <MDBox sx={cardStyle}>
+              <MDBox sx={imageWrapper}>
+                <MDBox
+                  component="img"
+                  src="https://i.ibb.co/zTcsZfQg/Gemini-Generated-Image-an9h0uan9h0uan9h-removebg-preview.png"
+                  alt="Special Request"
+                  sx={imageSx}
+                />
+              </MDBox>
+              <MDBox sx={contentStyle}>
+                <MDTypography variant="h6">Special Requests</MDTypography>
+                <MDTypography variant="h3" color="warning">
+                  {vanBookingRequest.length}
+                </MDTypography>
+              </MDBox>
             </MDBox>
           </Grid>
 
-          {/* Screens section */}
+          {/* ================= INQUIRE SECTION ================= */}
           <Grid item xs={12} md={6} lg={3}>
-            <MDBox mb={1.5}>
-              <ComplexStatisticsCard
-                // Replacing icon with an image
-                icon={
-                  <img
-                    src="https://i.ibb.co/dmvyMMn/image-1.webp"
-                    alt="Screens"
-                    style={{ width: "40px", height: "40px", objectFit: "cover" }}
-                  />
-                }
-                color="error"
-                title="Screens section"
-                count={Screensdepartment.length}
-                sx={{ fontSize: "1.2rem" }} // Setting font size for the count text
-              />
-            </MDBox>
-          </Grid>
-
-          {/* Department of Arabic Calligraphy section */}
-          <Grid item xs={12} md={6} lg={3}>
-            <MDBox mb={1.5}>
-              <ComplexStatisticsCard
-                // Replacing icon with an image
-                icon={
-                  <img
-                    src="https://i.ibb.co/5vHKmx1/image-2.webp"
-                    alt="Calligraphy"
-                    style={{ width: "40px", height: "40px", objectFit: "cover" }}
-                  />
-                }
-                title="Department of Arabic Calligraphy section"
-                count={ArabicCalligraphy.length} // Fallback to 0 if citiesCount is invalid
-                color="info"
-                sx={{ fontSize: "1.2rem" }} // Setting font size for the count text
-              />
-            </MDBox>
-          </Grid>
-
-          {/* Software department section */}
-          <Grid item xs={12} md={6} lg={3}>
-            <MDBox mb={1.5}>
-              <ComplexStatisticsCard
-                // Replacing icon with an image
-                icon={
-                  <img
-                    src="https://i.ibb.co/DDCFSm4/image-3.webp"
-                    alt="Software"
-                    style={{ width: "40px", height: "40px", objectFit: "cover" }}
-                  />
-                }
-                title="Software department section"
-                count={0}
-                color="primary"
-                sx={{ fontSize: "1.2rem" }} // Setting font size for the count text
-              />
-            </MDBox>
-          </Grid>
-
-          {/* Social media section */}
-          <Grid item xs={12} md={6} lg={3}>
-            <MDBox mb={1.5}>
-              <ComplexStatisticsCard
-                // Replacing icon with an image
-                icon={
-                  <img
-                    src="https://i.ibb.co/K5khVnQ/image-4.webp"
-                    alt="Social Media"
-                    style={{ width: "40px", height: "40px", objectFit: "cover" }}
-                  />
-                }
-                title="Social media section"
-                count={Socialmedia.length}
-                color="secondary"
-                sx={{ fontSize: "1.2rem" }} // Setting font size for the count text
-              />
-            </MDBox>
-          </Grid>
-
-          {/* Media and Communications Department */}
-          <Grid item xs={12} md={6} lg={3}>
-            <MDBox mb={1.5}>
-              <ComplexStatisticsCard
-                // Replacing icon with an image
-                icon={
-                  <img
-                    src="https://i.ibb.co/8BD4CKD/image-5.webp"
-                    alt="Media & Communications"
-                    style={{ width: "40px", height: "40px", objectFit: "cover" }}
-                  />
-                }
-                color="success"
-                title="Media and Communications Photo"
-                count={MediaCommunicationsphoto.length}
-                sx={{ fontSize: "1.2rem" }} // Setting font size for the count text
-              />
-            </MDBox>
-          </Grid>
-          <Grid item xs={12} md={6} lg={3}>
-            <MDBox mb={1.5}>
-              <ComplexStatisticsCard
-                // Replacing icon with an image
-                icon={
-                  <img
-                    src="https://i.ibb.co/fdzHCnPG/67f3c789-8e2f-4ca3-aee6-e3db66af1c6f-removalai-preview.png"
-                    alt="Media & Communications"
-                    style={{ width: "40px", height: "40px", objectFit: "cover" }}
-                  />
-                }
-                color="success"
-                title="Media and Communications Video"
-                count={MediaCommunicationsvideo.length}
-                sx={{ fontSize: "1.2rem" }} // Setting font size for the count text
-              />
-            </MDBox>
-          </Grid>
-          <Grid item xs={12} md={6} lg={3}>
-            <MDBox mb={1.5}>
-              <ComplexStatisticsCard
-                // Replacing icon with an image
-                icon={
-                  <img
-                    src="https://i.ibb.co/NgXxvg9P/58583b7c-7c76-4f85-82b0-3e9fdf165d74-removalai-preview.png"
-                    alt="News"
-                    style={{ width: "40px", height: "40px", objectFit: "cover" }}
-                  />
-                }
-                color="error"
-                title="News section"
-                count={News.length}
-                sx={{ fontSize: "1.2rem" }} // Setting font size for the count text
-              />
-            </MDBox>
-          </Grid>
-          <Grid item xs={12} md={6} lg={3}>
-            <MDBox mb={1.5}>
-              <ComplexStatisticsCard
-                // Replacing icon with an image
-                icon={
-                  <img
-                    src="https://i.ibb.co/7J7PSj28/2dfdbf59-c33c-4ca6-ae20-a6b6a1f40559-removalai-preview.png"
-                    alt="Calligraphy"
-                    style={{ width: "40px", height: "40px", objectFit: "cover" }}
-                  />
-                }
-                title="Partner section"
-                count={Partner.length} // Fallback to 0 if citiesCount is invalid
-                color="info"
-                sx={{ fontSize: "1.2rem" }} // Setting font size for the count text
-              />
+            <MDBox sx={cardStyle}>
+              <MDBox sx={imageWrapper}>
+                <MDBox
+                  component="img"
+                  src="https://i.ibb.co/gLgHyRJS/127-1277563-enquiries-telemarketing-icon-removebg-preview.png"
+                  alt="Inquiry"
+                  sx={imageSx}
+                />
+              </MDBox>
+              <MDBox sx={contentStyle}>
+                <MDTypography variant="h6">Inquire Section</MDTypography>
+                <MDTypography variant="h3" color="error">
+                  {inquireSection.length}
+                </MDTypography>
+              </MDBox>
             </MDBox>
           </Grid>
         </Grid>

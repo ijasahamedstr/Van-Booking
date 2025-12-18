@@ -1,196 +1,194 @@
 import React, { useEffect, useState } from "react";
-import Grid from "@mui/material/Grid";
-import Card from "@mui/material/Card";
-import Button from "@mui/material/Button";
-import AddIcon from "@mui/icons-material/Add";
-import CircularProgress from "@mui/material/CircularProgress";
-import { Link } from "react-router-dom";
-import PropTypes from "prop-types";
+import {
+  Grid,
+  Card,
+  CircularProgress,
+  Dialog,
+  DialogTitle,
+  DialogContent,
+  DialogActions,
+  Button,
+  TextField,
+} from "@mui/material";
 import axios from "axios";
-import Swal from "sweetalert2";
 
-// Material Dashboard 2 React components
 import MDBox from "components/MDBox";
 import MDTypography from "components/MDTypography";
-
-// Material Dashboard 2 React example components
 import DashboardLayout from "examples/LayoutContainers/DashboardLayout";
 import DashboardNavbar from "examples/Navbars/DashboardNavbar";
 import DataTable from "examples/Tables/DataTable";
 
-/* ---------------- Helper components ---------------- */
-const Author = ({ name, style }) => (
-  <MDBox display="flex" alignItems="center" lineHeight={1}>
-    <MDBox ml={2} lineHeight={1}>
-      <MDTypography variant="button" fontWeight="medium" style={style}>
-        {name}
-      </MDTypography>
-    </MDBox>
-  </MDBox>
-);
+/* ================= ADMIN CONSTANTS ================= */
+const ADMIN_NAME = "ASHARY TRAVELS & TOURISUM";
+const ADMIN_MOBILE = "0768696704";
 
-Author.propTypes = {
-  name: PropTypes.string.isRequired,
-  style: PropTypes.object,
-};
-
-Author.defaultProps = {
-  style: {},
-};
-
-const SubText = ({ text }) => (
-  <MDBox lineHeight={1} textAlign="left">
-    <MDTypography variant="caption" color="text" fontWeight="medium">
-      {text}
-    </MDTypography>
-  </MDBox>
-);
-
-SubText.propTypes = {
-  text: PropTypes.string.isRequired,
-};
-
-/* ---------------- Component ---------------- */
 function InquirySectionView() {
   const [inquiries, setInquiries] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
 
-  const apiBase = process.env.REACT_APP_API_HOST || "";
+  const [open, setOpen] = useState(false);
+  const [selectedInquiry, setSelectedInquiry] = useState(null);
+  const [reply, setReply] = useState("");
 
+  const apiBase = process.env.REACT_APP_API_HOST;
+
+  /* ================= FETCH INQUIRIES ================= */
   useEffect(() => {
-    let mounted = true;
-
-    const fetchData = async () => {
-      try {
-        const response = await axios.get(`${apiBase}/inquiry`);
-        const data = response?.data;
-        if (mounted) {
-          if (Array.isArray(data)) {
-            // newest first
-            setInquiries(data.slice().reverse());
-          } else {
-            setInquiries([]);
-            // eslint-disable-next-line no-console
-            console.warn("/inquiry returned non-array:", data);
-          }
-        }
-      } catch (err) {
-        // eslint-disable-next-line no-console
-        console.error("Error fetching inquiries:", err);
-        if (mounted) setError("Failed to fetch inquiries.");
-      } finally {
-        if (mounted) setLoading(false);
-      }
-    };
-
-    fetchData();
-    return () => {
-      mounted = false;
-    };
+    axios
+      .get(`${apiBase}/inquiry`)
+      .then((res) => {
+        setInquiries(res.data.reverse());
+        setLoading(false);
+      })
+      .catch(() => setLoading(false));
   }, [apiBase]);
 
+  /* ================= OPEN POPUP ================= */
+  const handleOpen = (item) => {
+    setSelectedInquiry(item);
+    setReply("");
+    setOpen(true);
+  };
+
+  /* ================= FORMAT CUSTOMER NUMBER ================= */
+  const formatCustomerNumber = (mobile = "") => {
+    return mobile.replace(/\D/g, "").replace(/^0/, "94");
+  };
+
+  /* ================= OPEN WHATSAPP (CUSTOMER NUMBER) ================= */
+  const openWhatsAppReply = (inquiry, replyMessage) => {
+    const message = `
+*New Inquiry Reply*
+
+*From:* ${ADMIN_NAME}
+*Admin Mobile:* ${ADMIN_MOBILE}
+
+*Customer Name:* ${inquiry.name || "N/A"}
+*Customer Mobile:* ${inquiry.mobile || "N/A"}
+*Inquiry Type:* ${inquiry.inquirytype || "N/A"}
+
+*Admin Reply:*
+${replyMessage}
+
+_Thank you_
+*${ADMIN_NAME}*
+    `;
+
+    // ✅ SEND TO CUSTOMER NUMBER
+    const phoneNumber = formatCustomerNumber(inquiry.mobile);
+
+    const url = `https://wa.me/${phoneNumber}?text=${encodeURIComponent(message)}`;
+
+    window.open(url, "_blank");
+  };
+
+  /* ================= SAVE → SEND ================= */
+  const handleSend = async () => {
+    if (!reply.trim()) {
+      alert("Please enter reply message");
+      return;
+    }
+
+    try {
+      // 1️⃣ SAVE REPLY TO DATABASE
+      await axios.post(`${apiBase}/inquiry/reply`, {
+        inquiryId: selectedInquiry._id,
+        adminName: ADMIN_NAME,
+        adminMobile: ADMIN_MOBILE,
+        replyMessage: reply,
+      });
+
+      // 2️⃣ SEND WHATSAPP TO CUSTOMER
+      openWhatsAppReply(selectedInquiry, reply);
+
+      setOpen(false);
+      alert("Reply saved & WhatsApp sent to customer");
+    } catch (error) {
+      console.error(error);
+      alert("Failed to send reply");
+    }
+  };
+
+  /* ================= TABLE ================= */
   const columns = [
-    { Header: "Name", accessor: "Name", width: "25%", align: "left" },
-    { Header: "Mobile", accessor: "Mobile", width: "20%", align: "left" },
-    { Header: "Inquiry Type", accessor: "Type", width: "20%", align: "left" },
-    { Header: "Order No.", accessor: "OrderNo", width: "15%", align: "left" },
-    { Header: "Order Date", accessor: "OrderDate", width: "20%", align: "left" },
+    { Header: "Name", accessor: "name" },
+    { Header: "Mobile", accessor: "mobile" },
+    { Header: "Type", accessor: "type" },
+    { Header: "Action", accessor: "action" },
   ];
 
   const rows = inquiries.map((item) => ({
-    Name: (
-      <Author
-        name={item.name || "—"}
-        style={{ fontFamily: "Tajawal, sans-serif", fontSize: "15px" }}
-      />
+    name: item.name,
+    mobile: item.mobile,
+    type: item.inquirytype,
+    action: (
+      <Button size="small" variant="contained" color="success" onClick={() => handleOpen(item)}>
+        Reply
+      </Button>
     ),
-    Mobile: <SubText text={item.mobile || "—"} />,
-    Type: <SubText text={item.inquirytype || "—"} />,
-    OrderNo: <SubText text={item.ordernumber || "—"} />,
-    OrderDate: <SubText text={item.orderdate || "—"} />,
   }));
 
+  /* ================= LOADING ================= */
   if (loading) {
     return (
       <DashboardLayout>
         <DashboardNavbar />
-        <MDBox
-          pt={6}
-          pb={3}
-          display="flex"
-          justifyContent="center"
-          alignItems="center"
-          minHeight="300px"
-        >
+        <MDBox py={6} textAlign="center">
           <CircularProgress />
         </MDBox>
       </DashboardLayout>
     );
   }
 
-  if (error) {
-    return (
-      <DashboardLayout>
-        <DashboardNavbar />
-        <MDBox pt={6} pb={3}>
-          <MDTypography color="error" variant="h6" align="center">
-            {error}
-          </MDTypography>
-        </MDBox>
-      </DashboardLayout>
-    );
-  }
-
+  /* ================= UI ================= */
   return (
     <DashboardLayout>
       <DashboardNavbar />
-      <MDBox pt={6} pb={3}>
-        <Grid container spacing={6}>
+
+      <MDBox pt={6}>
+        <Grid container>
           <Grid item xs={12}>
             <Card>
-              <MDBox
-                mx={2}
-                mt={-3}
-                py={3}
-                px={2}
-                variant="gradient"
-                bgColor="info"
-                borderRadius="lg"
-                coloredShadow="info"
-                display="flex"
-                justifyContent="space-between"
-                alignItems="center"
-                flexWrap="wrap"
-              >
-                <MDTypography variant="h6" color="white">
-                  Inquiries
-                </MDTypography>
-              </MDBox>
-
-              <MDBox pt={3}>
-                {inquiries.length === 0 ? (
-                  <MDBox p={4} textAlign="center">
-                    <MDTypography variant="h6">No inquiries found.</MDTypography>
-                    <MDTypography variant="caption" color="text">
-                      Click &quot;Add New&quot; to create the first inquiry.
-                    </MDTypography>
-                  </MDBox>
-                ) : (
-                  <DataTable
-                    table={{ columns, rows }}
-                    isSorted={false}
-                    entriesPerPage={8}
-                    showTotalEntries
-                    pagination
-                    noEndBorder
-                  />
-                )}
+              <MDBox p={3}>
+                <DataTable table={{ columns, rows }} entriesPerPage={8} pagination />
               </MDBox>
             </Card>
           </Grid>
         </Grid>
       </MDBox>
+
+      {/* ================= POPUP FORM ================= */}
+      <Dialog open={open} onClose={() => setOpen(false)} fullWidth>
+        <DialogTitle>Send WhatsApp Reply</DialogTitle>
+
+        <DialogContent>
+          <MDTypography variant="caption" display="block">
+            Customer: {selectedInquiry?.name}
+          </MDTypography>
+
+          <MDTypography variant="caption" display="block">
+            Mobile: {selectedInquiry?.mobile}
+          </MDTypography>
+
+          <TextField
+            fullWidth
+            multiline
+            rows={4}
+            label="Reply Message"
+            value={reply}
+            onChange={(e) => setReply(e.target.value)}
+            margin="normal"
+            placeholder="Type admin reply..."
+          />
+        </DialogContent>
+
+        <DialogActions>
+          <Button onClick={() => setOpen(false)}>Cancel</Button>
+          <Button variant="contained" color="success" onClick={handleSend}>
+            Save & Send WhatsApp
+          </Button>
+        </DialogActions>
+      </Dialog>
     </DashboardLayout>
   );
 }

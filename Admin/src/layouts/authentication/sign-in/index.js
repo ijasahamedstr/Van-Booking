@@ -94,13 +94,39 @@ function Basic() {
           mb={1}
           textAlign="center"
         >
-          <MDTypography variant="h4" fontWeight="medium" color="white" mt={1}>
+          <MDTypography
+            variant="h4"
+            fontWeight="medium"
+            color="white"
+            mt={1}
+            display="flex"
+            justifyContent="center"
+          >
             <img
-              src="https://i.ibb.co/hRZ1bMy/78-removebg-preview.png"
+              src="https://i.ibb.co/HppxBxgP/Gemini-Generated-Image-f3bp5nf3bp5nf3bp.png"
               alt="Responsive Image"
               style={{
                 width: "50%",
                 height: "auto",
+                borderRadius: "22px",
+
+                /* -------- 3D EFFECT -------- */
+                boxShadow: `
+            0 12px 30px rgba(0, 0, 0, 0.45),
+            inset 0 1px 1px rgba(255, 255, 255, 0.25)
+          `,
+                background: "linear-gradient(145deg, #ffffff, #e6e6e6)",
+                transform: "perspective(1000px) translateZ(0)",
+                transition: "all 0.35s ease",
+              }}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.transform =
+                  "perspective(1000px) translateY(-8px) scale(1.02)";
+                e.currentTarget.style.boxShadow = "0 22px 45px rgba(0, 0, 0, 0.6)";
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.transform = "perspective(1000px) translateY(0) scale(1)";
+                e.currentTarget.style.boxShadow = "0 12px 30px rgba(0, 0, 0, 0.45)";
               }}
             />
           </MDTypography>

@@ -143,25 +143,51 @@ function Sidenav({ color, brand, brandName, routes, ...rest }) {
             <Icon sx={{ fontWeight: "bold" }}>close</Icon>
           </MDTypography>
         </MDBox>
-        <MDBox component={NavLink} to="/" display="flex" alignItems="center">
+        <MDBox
+          component={NavLink}
+          to="/"
+          display="flex"
+          alignItems="center"
+          sx={{
+            textDecoration: "none",
+            cursor: "pointer",
+          }}
+        >
+          {/* ---------- LOGO IMAGE ---------- */}
           <img
-            src="https://i.ibb.co/hRZ1bMy/78-removebg-preview.png"
+            src="https://i.ibb.co/HppxBxgP/Gemini-Generated-Image-f3bp5nf3bp5nf3bp.png"
             alt="Responsive Image"
             style={{
               width: "100%",
               height: "auto",
+              borderRadius: "16px",
+
+              /* ===== 3D EFFECT ===== */
+              boxShadow: `
+        0 8px 22px rgba(0, 0, 0, 0.35),
+        inset 0 1px 1px rgba(255, 255, 255, 0.25)
+      `,
+              transform: "perspective(900px) translateZ(0)",
+              transition: "all 0.3s ease",
+            }}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.transform = "perspective(900px) translateY(-6px) scale(1.05)";
+              e.currentTarget.style.boxShadow = "0 18px 38px rgba(0, 0, 0, 0.5)";
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.transform = "perspective(900px) translateY(0) scale(1)";
+              e.currentTarget.style.boxShadow = "0 8px 22px rgba(0, 0, 0, 0.35)";
             }}
           />
+
+          {/* ---------- BRAND NAME ---------- */}
           <MDBox
             width={!brandName && "100%"}
             sx={(theme) => sidenavLogoLabel(theme, { miniSidenav })}
           >
-            <MDTypography
-              component="h6"
-              variant="button"
-              fontWeight="medium"
-              color={textColor}
-            ></MDTypography>
+            <MDTypography component="h6" variant="button" fontWeight="medium" color={textColor}>
+              {brandName}
+            </MDTypography>
           </MDBox>
         </MDBox>
       </MDBox>
