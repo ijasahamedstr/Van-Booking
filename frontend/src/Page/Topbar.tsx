@@ -32,7 +32,7 @@ const inquiryTypes = [
   { value: "General Inquiry", label: "General Inquiry" },
 ];
 
-const Montserrat = "cursive";
+const Montserrat = '"Montserrat", sans-serif';
 
 // cart keys used across the app
 const CART_KEY = "cartCourses";

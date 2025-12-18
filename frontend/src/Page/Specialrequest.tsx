@@ -13,7 +13,7 @@ import Swal from "sweetalert2";
 const API_HOST = import.meta.env.VITE_API_HOST as string;
 
 /* ---------------- FONT ---------------- */
-const CURSIVE_FONT = "cursive";
+const MONTSERRAT = '"Montserrat", sans-serif';
 
 /* ---------------- REQUEST TYPES ---------------- */
 const requestTypes = [
@@ -32,15 +32,28 @@ const ADMIN_WHATSAPP = "966594796823";
 
 /* ---------------- FIELD STYLE ---------------- */
 const fieldSx = {
-  fontFamily: CURSIVE_FONT,
+  fontFamily: MONTSERRAT,
+  "& .MuiInputBase-root": {
+    borderRadius: 2,
+    backgroundColor: "#ffffffcc",
+    backdropFilter: "blur(6px)",
+  },
   "& .MuiInputBase-input": {
-    fontFamily: CURSIVE_FONT,
+    fontFamily: MONTSERRAT,
+    padding: "14px",
   },
   "& .MuiInputLabel-root": {
-    fontFamily: CURSIVE_FONT,
+    fontFamily: MONTSERRAT,
   },
-  "& .MuiSelect-select": {
-    fontFamily: CURSIVE_FONT,
+  "& .MuiOutlinedInput-notchedOutline": {
+    borderColor: "#cbd5e1",
+  },
+  "&:hover .MuiOutlinedInput-notchedOutline": {
+    borderColor: "#0ea5e9",
+  },
+  "& .Mui-focused .MuiOutlinedInput-notchedOutline": {
+    borderColor: "#0284c7",
+    boxShadow: "0 0 0 3px rgba(14,165,233,0.15)",
   },
 };
 
@@ -85,7 +98,7 @@ const RequestForm: React.FC = () => {
   /* ---------------- WHATSAPP ---------------- */
   const openWhatsApp = () => {
     const message = `
-🚨 New Inquiry 🚨
+🚐 New Van Request
 
 Name: ${form.customerName}
 Mobile: ${form.mobileNumber}
@@ -158,8 +171,10 @@ ${form.description}
         display: "flex",
         alignItems: "center",
         justifyContent: "center",
-        fontFamily: CURSIVE_FONT,
-        py: 6,
+        py: 8,
+        background:
+          "linear-gradient(135deg, #0f172a, #020617)",
+        fontFamily: MONTSERRAT,
       }}
     >
       <Container maxWidth="sm">
@@ -167,16 +182,19 @@ ${form.description}
           sx={{
             p: 4,
             borderRadius: 4,
-            background: "rgba(255,255,255,0.95)",
-            boxShadow: "0 20px 40px rgba(0,0,0,0.25)",
+            background:
+              "linear-gradient(180deg, rgba(255,255,255,0.95), rgba(255,255,255,0.85))",
+            boxShadow:
+              "0 30px 60px rgba(0,0,0,0.35)",
+            backdropFilter: "blur(12px)",
           }}
         >
           <Typography
             variant="h4"
             textAlign="center"
             mb={3}
-            fontWeight={700}
-            sx={{ fontFamily: CURSIVE_FONT }}
+            fontWeight={800}
+            sx={{ fontFamily: MONTSERRAT }}
           >
             Van Request Form
           </Typography>
@@ -212,7 +230,7 @@ ${form.description}
             sx={fieldSx}
           >
             {requestTypes.map((type) => (
-              <MenuItem key={type} value={type} sx={{ fontFamily: CURSIVE_FONT }}>
+              <MenuItem key={type} value={type} sx={{ fontFamily: MONTSERRAT }}>
                 {type}
               </MenuItem>
             ))}
@@ -220,8 +238,8 @@ ${form.description}
 
           {showDate && (
             <TextField
-              fullWidth
               type="date"
+              fullWidth
               label="Booking Date"
               name="bookingDate"
               value={form.bookingDate}
@@ -244,7 +262,7 @@ ${form.description}
               sx={fieldSx}
             >
               {vans.map((van) => (
-                <MenuItem key={van} value={van} sx={{ fontFamily: CURSIVE_FONT }}>
+                <MenuItem key={van} value={van} sx={{ fontFamily: MONTSERRAT }}>
                   {van}
                 </MenuItem>
               ))}
@@ -274,7 +292,6 @@ ${form.description}
                 margin="normal"
                 sx={fieldSx}
               />
-
               <TextField
                 fullWidth
                 label="Area / City"
@@ -301,15 +318,24 @@ ${form.description}
 
           <Button
             fullWidth
-            variant="contained"
             size="large"
+            onClick={handleSubmit}
             sx={{
               mt: 3,
-              fontFamily: CURSIVE_FONT,
-              fontSize: 18,
+              py: 1.4,
+              borderRadius: 3,
+              fontFamily: MONTSERRAT,
+              fontSize: 17,
               textTransform: "none",
+              background:
+                "linear-gradient(135deg, #06b6d4, #0ea5e9)",
+              boxShadow:
+                "0 12px 25px rgba(14,165,233,0.45)",
+              "&:hover": {
+                background:
+                  "linear-gradient(135deg, #0284c7, #0369a1)",
+              },
             }}
-            onClick={handleSubmit}
           >
             Submit Request
           </Button>

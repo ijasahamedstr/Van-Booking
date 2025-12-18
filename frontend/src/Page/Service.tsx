@@ -11,7 +11,7 @@ import { Link } from "react-router-dom";
 
 /* ---------------- FONT ---------------- */
 
-const TAJAWAL = "cursive";
+const TAJAWAL = '"Montserrat", sans-serif';
 
 /* ---------------- IMAGE URLS ---------------- */
 

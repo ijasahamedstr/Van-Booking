@@ -17,7 +17,7 @@ const Footer: React.FC = () => {
           sx={{
             color: "#fff",
             fontSize: "0.85rem",
-            fontFamily: "cursive",
+            fontFamily: '"Montserrat", sans-serif',
           }}
         >
           Copyright © 2026 | ASHARY TRAVELS & TOURISUM. All rights reserved.

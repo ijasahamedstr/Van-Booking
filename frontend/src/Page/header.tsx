@@ -19,7 +19,7 @@ import { useNavigate } from "react-router-dom";
 
 /* ---------------- FONT ---------------- */
 
-const CURSIVE = "cursive";
+const MONTSERRAT = '"Montserrat", sans-serif';
 
 /* ---------------- ICON IMAGES ---------------- */
 
@@ -84,7 +84,7 @@ export default function EtsyStyleHeader() {
           color: "#000",
           px: { xs: 3, sm: 6, md: 10 },
           mt: "55px",
-          fontFamily: CURSIVE,
+          fontFamily: MONTSERRAT,
         }}
       >
         <Toolbar
@@ -93,10 +93,10 @@ export default function EtsyStyleHeader() {
             minHeight: { xs: 110, sm: 130, md: 150 },
             justifyContent: "space-between",
             alignItems: "center",
-            fontFamily: CURSIVE,
+            fontFamily: MONTSERRAT,
           }}
         >
-          {/* LOGO (CLICKABLE) */}
+          {/* LOGO */}
           <Box
             onClick={handleLogoClick}
             sx={{
@@ -133,12 +133,12 @@ export default function EtsyStyleHeader() {
         PaperProps={{
           sx: {
             backgroundColor: drawerBg,
-            fontFamily: CURSIVE,
+            fontFamily: MONTSERRAT,
           },
         }}
       >
-        <Box sx={{ width: 300, py: 3, fontFamily: CURSIVE }}>
-          {/* DRAWER LOGO (CLICKABLE) */}
+        <Box sx={{ width: 300, py: 3, fontFamily: MONTSERRAT }}>
+          {/* DRAWER LOGO */}
           <Box
             onClick={handleLogoClick}
             sx={{
@@ -173,7 +173,7 @@ export default function EtsyStyleHeader() {
                   primaryTypographyProps={{
                     fontSize: 17,
                     fontWeight: 500,
-                    fontFamily: CURSIVE,
+                    fontFamily: MONTSERRAT,
                   }}
                 />
               </ListItemButton>
@@ -187,7 +187,7 @@ export default function EtsyStyleHeader() {
                   primaryTypographyProps={{
                     fontSize: 17,
                     fontWeight: 500,
-                    fontFamily: CURSIVE,
+                    fontFamily: MONTSERRAT,
                   }}
                 />
               </ListItemButton>
@@ -201,7 +201,7 @@ export default function EtsyStyleHeader() {
                   primaryTypographyProps={{
                     fontSize: 17,
                     fontWeight: 500,
-                    fontFamily: CURSIVE,
+                    fontFamily: MONTSERRAT,
                   }}
                 />
               </ListItemButton>
@@ -221,7 +221,7 @@ export default function EtsyStyleHeader() {
               color: "#25D366",
               fontSize: 15,
               fontWeight: 500,
-              fontFamily: CURSIVE,
+              fontFamily: MONTSERRAT,
               cursor: "pointer",
             }}
             onClick={() => window.open("https://wa.me/966XXXXXXXXX", "_blank")}

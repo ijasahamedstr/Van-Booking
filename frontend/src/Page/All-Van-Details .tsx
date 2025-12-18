@@ -10,7 +10,7 @@ import {
 
 /* ---------------- FONT ---------------- */
 
-const TAJAWAL = "cursive";
+const TAJAWAL = '"Montserrat", sans-serif';
 
 /* ---------------- DATA ---------------- */
 
