@@ -8,6 +8,7 @@ import AccountAdminrouter from "./routes/AccountRegisterAdmin.route.js";
 import Inquirysection from "./routes/Inquiry.route.js";
 import Slidersection from "./routes/Slidersection.route.js";
 import Requestrouter from "./routes/Request.route.js";
+import Vanaddsection from "./routes/Vanadd.route.js";
 
 // Create an instance of Express
 const app = express();
@@ -21,7 +22,7 @@ app.use(express.urlencoded({ extended: true }));
 app.use(
   cors({
     origin: [
-      "https://van-booking-rho.vercel.app",
+      "http://localhost:5173",
       "http://localhost:3001",
     ],
     methods: ["GET", "POST", "PUT", "DELETE"],
@@ -44,7 +45,7 @@ app.use('/Adminregister',AccountAdminrouter);
 app.use('/Slidersection',Slidersection);
 app.use('/inquiry',Inquirysection);
 app.use('/Request',Requestrouter);
-
+app.use('/Vanaddinfo',Vanaddsection);
 
 
 

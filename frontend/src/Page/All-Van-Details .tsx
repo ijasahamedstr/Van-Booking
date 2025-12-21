@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import {
   Box,
   Card,
@@ -6,50 +6,84 @@ import {
   Button,
   Container,
   Divider,
+  CircularProgress,
 } from "@mui/material";
+import { useNavigate } from "react-router-dom";
 
-/* ---------------- FONT ---------------- */
+/* ---------------- CONFIG & FONT ---------------- */
 
 const TAJAWAL = '"Montserrat", sans-serif';
+const API_HOST = import.meta.env.VITE_API_HOST as string;
 
-/* ---------------- DATA ---------------- */
+/* ---------------- INTERFACE ---------------- */
 
-const vans = [
-  {
-    name: "Luxury Family Van",
-    image:
-      "https://i.ibb.co/Wv2z7Jd0/Gemini-Generated-Image-1ltd7r1ltd7r1ltd-removebg-preview.png",
-    seats: "8 Seater",
-    ac: "AC",
-    type: "Automatic",
-    description:
-      "Comfortable luxury van suitable for long family trips.",
-  },
-  {
-    name: "Executive Travel Van",
-    image:
-      "https://i.ibb.co/r2Cp8kcV/326794852-543189624509069-4363368338139961666-n-removebg-preview-1.png",
-    seats: "12 Seater",
-    ac: "AC",
-    type: "Manual",
-    description:
-      "Spacious executive van with premium interiors.",
-  },
-  {
-    name: "Cargo Utility Van",
-    image:
-      "https://i.ibb.co/Hf2P3vNw/Head-removebg-preview.png",
-    seats: "2 Seater",
-    ac: "Non-AC",
-    type: "Manual",
-    description:
-      "Best for goods transport and utility purposes.",
-  },
-];
+interface VanData {
+  _id: string;
+  vanname: string;
+  Seat: number;
+  Type: "AC" | "NoAC";
+  type2: "Automatic" | "Manual";
+  Image: string[];
+}
 
 /* ---------------- COMPONENT ---------------- */
 
 const VanCards: React.FC = () => {
+  const [vans, setVans] = useState<VanData[]>([]);
+  const [loading, setLoading] = useState<boolean>(true);
+  const [error, setError] = useState<string | null>(null);
+
+   const navigate = useNavigate(); // ✅ FIX
+
+  useEffect(() => {
+    const fetchVans = async () => {
+      try {
+        setLoading(true);
+        const resp = await fetch(`${API_HOST}/Vanaddinfo`);
+        if (!resp.ok) throw new Error("Failed to fetch data from the server");
+        const data = await resp.json();
+        setVans(data);
+      } catch (err: any) {
+        setError(err.message);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchVans();
+  }, []);
+
+  if (loading) {
+    return (
+      <Box
+        sx={{
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+          height: "80vh",
+          fontFamily: TAJAWAL,
+        }}
+      >
+        <CircularProgress color="warning" />
+      </Box>
+    );
+  }
+
+  if (error) {
+    return (
+      <Box sx={{ textAlign: "center", py: 10, fontFamily: TAJAWAL }}>
+        <Typography color="error" fontFamily={TAJAWAL}>
+          Error: {error}
+        </Typography>
+        <Button
+          onClick={() => window.location.reload()}
+          sx={{ mt: 2, fontFamily: TAJAWAL }}
+        >
+          Retry
+        </Button>
+      </Box>
+    );
+  }
+
   return (
     <Box sx={{ py: 8, background: "#f4f6f8", fontFamily: TAJAWAL }}>
       <Container maxWidth="xl">
@@ -58,21 +92,22 @@ const VanCards: React.FC = () => {
             display: "grid",
             gridTemplateColumns: {
               xs: "1fr",
+              sm: "1fr 1fr",
               md: "repeat(3, 1fr)",
             },
             gap: 4,
           }}
         >
-          {vans.map((van, index) => (
+          {vans.map((van) => (
             <Card
-              key={index}
+              key={van._id}
               sx={{
                 p: 3,
                 borderRadius: 5,
-                fontFamily: TAJAWAL,
                 background: "#ffffff",
                 boxShadow: "0 10px 30px rgba(0,0,0,0.12)",
                 transition: "all 0.4s ease",
+                fontFamily: TAJAWAL,
                 "&:hover": {
                   transform: "translateY(-10px)",
                   boxShadow: "0 18px 45px rgba(0,0,0,0.18)",
@@ -81,7 +116,7 @@ const VanCards: React.FC = () => {
                 flexDirection: "column",
               }}
             >
-              {/* ================= 3D IMAGE ================= */}
+              {/* IMAGE */}
               <Box
                 sx={{
                   height: 200,
@@ -98,12 +133,10 @@ const VanCards: React.FC = () => {
                     transformStyle: "preserve-3d",
                     transition: "transform 0.6s ease",
                     "&:hover": {
-                      transform:
-                        "rotateX(8deg) rotateY(-8deg) scale(1.05)",
+                      transform: "rotateX(8deg) rotateY(-8deg) scale(1.05)",
                     },
                   }}
                 >
-                  {/* SHADOW */}
                   <Box
                     sx={{
                       position: "absolute",
@@ -114,19 +147,15 @@ const VanCards: React.FC = () => {
                       borderRadius: "50%",
                     }}
                   />
-
-                  {/* IMAGE */}
                   <Box
                     component="img"
-                    src={van.image}
-                    alt={van.name}
+                    src={van.Image[0]}
+                    alt={van.vanname}
                     sx={{
                       maxWidth: "100%",
                       maxHeight: 170,
                       transform: "translateZ(40px)",
-                      filter:
-                        "drop-shadow(0 25px 35px rgba(0,0,0,0.35))",
-                      transition: "all 0.6s ease",
+                      filter: "drop-shadow(0 25px 35px rgba(0,0,0,0.35))",
                     }}
                   />
                 </Box>
@@ -142,7 +171,7 @@ const VanCards: React.FC = () => {
                   fontFamily: TAJAWAL,
                 }}
               >
-                {van.name}
+                {van.vanname}
               </Typography>
 
               <Divider sx={{ mb: 2 }} />
@@ -157,25 +186,25 @@ const VanCards: React.FC = () => {
                   fontFamily: TAJAWAL,
                 }}
               >
-                <Typography color="text.secondary" fontFamily={TAJAWAL}>
+                <Typography fontFamily={TAJAWAL} color="text.secondary">
                   Seats
                 </Typography>
-                <Typography fontWeight={600} fontFamily={TAJAWAL}>
-                  {van.seats}
+                <Typography fontFamily={TAJAWAL} fontWeight={600}>
+                  {van.Seat} Seater
                 </Typography>
 
-                <Typography color="text.secondary" fontFamily={TAJAWAL}>
-                  AC
+                <Typography fontFamily={TAJAWAL} color="text.secondary">
+                  AC Status
                 </Typography>
-                <Typography fontWeight={600} fontFamily={TAJAWAL}>
-                  {van.ac}
+                <Typography fontFamily={TAJAWAL} fontWeight={600}>
+                  {van.Type}
                 </Typography>
 
-                <Typography color="text.secondary" fontFamily={TAJAWAL}>
+                <Typography fontFamily={TAJAWAL} color="text.secondary">
                   Transmission
                 </Typography>
-                <Typography fontWeight={600} fontFamily={TAJAWAL}>
-                  {van.type}
+                <Typography fontFamily={TAJAWAL} fontWeight={600}>
+                  {van.type2}
                 </Typography>
               </Box>
 
@@ -187,22 +216,25 @@ const VanCards: React.FC = () => {
                 mb={3}
                 fontFamily={TAJAWAL}
               >
-                {van.description}
+                Professional {van.vanname} available for booking.
               </Typography>
 
               {/* BUTTON */}
               <Button
                 variant="contained"
                 fullWidth
+                onClick={() => navigate(`/van/${van._id}`)}
                 sx={{
                   mt: "auto",
                   py: 1.3,
                   borderRadius: 3,
-                  background:
-                    "linear-gradient(135deg,#ff9800,#ff5722)",
+                  background: "linear-gradient(135deg,#ff9800,#ff5722)",
                   fontWeight: 700,
                   textTransform: "none",
                   fontFamily: TAJAWAL,
+                  "&:hover": {
+                    background: "linear-gradient(135deg,#ff5722,#ff9800)",
+                  },
                 }}
               >
                 View Details

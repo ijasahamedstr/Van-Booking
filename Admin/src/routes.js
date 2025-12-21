@@ -9,12 +9,12 @@ import AddSlider from "layouts/Slider-section/AddSlider";
 import EditSlider from "layouts/Slider-section/EditSlider";
 import InquirySectionView from "layouts/Inquire Here";
 import RequestServicesView from "layouts/Request Service";
-import CourseSectionView from "layouts/Course";
-import AddCourse from "layouts/Course/Addcoures";
-import EditCourse from "layouts/Course/Editcoures";
 import OttServiceGridView from "layouts/OTT-Service";
 import AddOTTService from "layouts/OTT-Service/Add-ott-Service";
 import EditOttService from "layouts/OTT-Service/Edit-ott-Service";
+import VanSectionView from "layouts/Van";
+import AddVan from "layouts/Van/AddVan";
+import EditVan from "layouts/Van/EditVan";
 
 const routes = [
   {
@@ -51,11 +51,11 @@ const routes = [
   },
   {
     type: "collapse",
-    name: "Course",
-    key: "Course",
+    name: "Van Detail",
+    key: "Van Detail",
     icon: <CardGiftcardIcon />,
-    route: "/Course",
-    component: <CourseSectionView />,
+    route: "/Vandetail",
+    component: <VanSectionView />,
   },
   {
     type: "collapse",
@@ -78,16 +78,12 @@ const routes = [
     component: <AddSlider />,
   },
   {
-    route: "/Addcoures",
-    component: <AddCourse />,
+    route: "/AddVan",
+    component: <AddVan />,
   },
   {
     route: "/AddOTT",
     component: <AddOTTService />,
-  },
-  {
-    route: "/Editcoures/:id",
-    component: <EditCourse />,
   },
   {
     route: "/EditSlider/:id",
@@ -96,6 +92,10 @@ const routes = [
   {
     route: "/EditOTT/:id",
     component: <EditOttService />,
+  },
+  {
+    route: "/EditVan/:id",
+    component: <EditVan />,
   },
 ];
 
