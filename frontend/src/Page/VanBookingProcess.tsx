@@ -107,7 +107,7 @@ const VanBookingProcess = () => {
                   key={index}
                   sx={{
                     textAlign: "center",
-                    width: "25%",
+                    width: "0%",
                   }}
                 >
                   {/* ROUND STEP */}
