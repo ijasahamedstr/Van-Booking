@@ -22,8 +22,8 @@ app.use(express.urlencoded({ extended: true }));
 app.use(
   cors({
     origin: [
-      "http://localhost:5173",
-      "http://localhost:3001",
+      "https://van-booking-rho.vercel.app",
+      "https://van-booking-booking.vercel.app",
     ],
     methods: ["GET", "POST", "PUT", "DELETE"],
     credentials: true,
