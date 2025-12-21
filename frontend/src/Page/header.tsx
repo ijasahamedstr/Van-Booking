@@ -101,7 +101,7 @@ export default function EtsyStyleHeader() {
             onClick={handleLogoClick}
             sx={{
               width: { xs: 240, sm: 320, md: 450 },
-              height: { xs: 90, sm: 110, md: 130 },
+              height: { xs: 90, sm: 10, md: 130 },
               display: "flex",
               alignItems: "center",
               cursor: "pointer",

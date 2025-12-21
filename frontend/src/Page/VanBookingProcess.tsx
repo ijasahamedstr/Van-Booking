@@ -1,158 +1,165 @@
 import { Box, Typography, Container } from "@mui/material";
-import { keyframes } from "@mui/system";
+import { useEffect, useState } from "react";
 
 /* ---------------- FONT ---------------- */
 const MONTSERRAT = '"Montserrat", sans-serif';
-
-/* ---------------- ANIMATIONS ---------------- */
-const float = keyframes`
-  0% { transform: translateY(0); }
-  50% { transform: translateY(-4px); }
-  100% { transform: translateY(0); }
-`;
 
 /* ---------------- DATA ---------------- */
 const steps = [
   {
     title: "Select Van",
-    icon: "https://cdn-icons-png.flaticon.com/512/3774/3774278.png",
+    image: "https://cdn-icons-png.flaticon.com/512/3774/3774278.png",
   },
   {
-    title: "Date",
-    icon: "https://cdn-icons-png.flaticon.com/512/747/747310.png",
+    title: "Choose Date",
+    image: "https://cdn-icons-png.flaticon.com/512/747/747310.png",
   },
   {
-    title: "Booking",
-    icon: "https://cdn-icons-png.flaticon.com/512/942/942748.png",
+    title: "Confirm Booking",
+    image: "https://cdn-icons-png.flaticon.com/512/942/942748.png",
   },
   {
     title: "Completed",
-    icon: "https://cdn-icons-png.flaticon.com/512/190/190411.png",
+    image: "https://cdn-icons-png.flaticon.com/512/190/190411.png",
   },
 ];
 
 /* ---------------- COMPONENT ---------------- */
 const VanBookingProcess = () => {
+  const [activeStep, setActiveStep] = useState(0);
+
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setActiveStep((prev) =>
+        prev < steps.length - 1 ? prev + 1 : 0
+      );
+    }, 2200);
+
+    return () => clearInterval(timer);
+  }, []);
+
+  const progressPercent =
+    (activeStep / (steps.length - 1)) * 100;
+
   return (
     <Box
       sx={{
-        pt: { xs: 5, md: 7 },
-        pb: 0,
+        py: { xs: 6, md: 8 },
         background: "#fff",
         fontFamily: MONTSERRAT,
       }}
     >
-      <Container maxWidth="xl">
+      <Container maxWidth="lg">
         {/* TITLE */}
         <Typography
           align="center"
           sx={{
-            fontFamily: MONTSERRAT,
-            fontSize: { xs: 22, md: 30, lg: 32 },
-            fontWeight: 800,
-            mb: { xs: 4, md: 6 },
+            fontSize: { xs: 22, md: 32 },
+            fontWeight: 900,
+            mb: 6,
           }}
         >
           How Van Booking Works
         </Typography>
 
-        {/* STEPS */}
-        <Box
-          sx={{
-            display: "grid",
-            gridTemplateColumns: "repeat(4, 1fr)",
-            alignItems: "center",
-            gap: { xs: 1.5, sm: 2.5, md: 4 },
-          }}
-        >
-          {steps.map((step, index) => (
-            <Box
-              key={index}
-              sx={{
-                position: "relative",
-                textAlign: "center",
-                fontFamily: MONTSERRAT,
-              }}
-            >
-              {/* ICON CARD (UNCHANGED) */}
-              <Box
-                sx={{
-                  width: { xs: 58, sm: 64, md: 82, lg: 90 },
-                  height: { xs: 58, sm: 64, md: 82, lg: 90 },
-                  mx: "auto",
-                  mb: { xs: 1, md: 1.6 },
-                  borderRadius: "50%",
-                  background:
-                    "linear-gradient(145deg, #ffffff, #e6f7f6)",
-                  boxShadow:
-                    "0 10px 25px rgba(0,0,0,0.15), inset 0 -3px 6px rgba(0,0,0,0.08)",
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  animation: `${float} 3s ease-in-out infinite`,
-                  transition: "all 0.35s ease",
-                  "&:hover": {
-                    transform: "translateY(-6px)",
-                  },
-                }}
-              >
-                <Box
-                  component="img"
-                  src={step.icon}
-                  alt={step.title}
-                  sx={{
-                    width: { xs: 26, sm: 30, md: 40, lg: 44 },
-                  }}
-                />
-              </Box>
+        {/* PROGRESS BAR WRAPPER */}
+        <Box sx={{ position: "relative", px: 2 }}>
+          {/* BASE BAR */}
+          <Box
+            sx={{
+              height: 6,
+              borderRadius: 6,
+              background: "#e5e7eb",
+            }}
+          />
 
-              {/* TEXT */}
-              <Typography
-                sx={{
-                  fontFamily: MONTSERRAT,
-                  fontWeight: 600,
-                  fontSize: { xs: 11, sm: 12, md: 14, lg: 15 },
-                }}
-              >
-                {step.title}
-              </Typography>
+          {/* ACTIVE BAR */}
+          <Box
+            sx={{
+              position: "absolute",
+              top: 0,
+              left: 0,
+              height: 6,
+              width: `${progressPercent}%`,
+              borderRadius: 6,
+              background:
+                "linear-gradient(90deg, #06f9f3, #0ea5e9)",
+              transition: "width 0.6s ease",
+            }}
+          />
 
-              {/* ✅ UPDATED ARROW CONNECTOR (ONLY THIS PART CHANGED) */}
-              {index !== steps.length - 1 && (
+          {/* STEPS */}
+          <Box
+            sx={{
+              display: "flex",
+              justifyContent: "space-between",
+              position: "absolute",
+              top: -28,
+              left: 0,
+              right: 0,
+            }}
+          >
+            {steps.map((step, index) => {
+              const isActive = index <= activeStep;
+
+              return (
                 <Box
+                  key={index}
                   sx={{
-                    position: "absolute",
-                    top: "42%",
-                    right: { xs: -18, sm: -26, md: -38, lg: -48 },
-                    display: "flex",
-                    alignItems: "center",
+                    textAlign: "center",
+                    width: "25%",
                   }}
                 >
-                  {/* LINE */}
+                  {/* ROUND STEP */}
                   <Box
                     sx={{
-                      width: { xs: 26, sm: 40, md: 60, lg: 75 },
-                      height: 3,
-                      borderRadius: 6,
-                      background:
-                        "linear-gradient(90deg, #cbd5e1, #06f9f3)",
+                      width: 56,
+                      height: 56,
+                      mx: "auto",
+                      mb: 1,
+                      borderRadius: "50%",
+                      background: "#fff",
+                      border: isActive
+                        ? "3px solid #06f9f3"
+                        : "2px solid #cbd5e1",
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                      boxShadow: isActive
+                        ? "0 10px 25px rgba(6,249,243,0.35)"
+                        : "none",
+                      transition: "all 0.4s ease",
                     }}
-                  />
+                  >
+                    <Box
+                      component="img"
+                      src={step.image}
+                      alt={step.title}
+                      sx={{
+                        width: 26,
+                        filter: isActive
+                          ? "none"
+                          : "grayscale(100%)",
+                        opacity: isActive ? 1 : 0.6,
+                        transition: "0.3s",
+                      }}
+                    />
+                  </Box>
 
-                  {/* ARROW HEAD */}
-                  <Box
+                  {/* LABEL */}
+                  <Typography
                     sx={{
-                      width: 0,
-                      height: 0,
-                      borderTop: "6px solid transparent",
-                      borderBottom: "6px solid transparent",
-                      borderLeft: "10px solid #06f9f3",
+                      fontSize: { xs: 11, md: 14 },
+                      fontWeight: isActive ? 700 : 500,
+                      color: isActive ? "#0f172a" : "#64748b",
                     }}
-                  />
+                  >
+                    {step.title}
+                  </Typography>
                 </Box>
-              )}
-            </Box>
-          ))}
+              );
+            })}
+          </Box>
         </Box>
       </Container>
     </Box>
