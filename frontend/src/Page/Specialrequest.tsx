@@ -27,30 +27,29 @@ const requestTypes = [
 /* ---------------- ADMIN WHATSAPP ---------------- */
 const ADMIN_WHATSAPP = "966594796823";
 
-/* ---------------- FIELD STYLE ---------------- */
+/* ---------------- FIELD STYLE (3D INPUT) ---------------- */
 const fieldSx = {
   fontFamily: MONTSERRAT,
   "& .MuiInputBase-root": {
-    borderRadius: 2,
-    backgroundColor: "#ffffffcc",
-    backdropFilter: "blur(6px)",
+    borderRadius: 3,
+    background:
+      "linear-gradient(145deg, rgba(255,255,255,0.9), rgba(245,245,245,0.8))",
+    boxShadow:
+      "inset 3px 3px 6px rgba(0,0,0,0.08), inset -3px -3px 6px rgba(255,255,255,0.9)",
+    transition: "all 0.3s ease",
+  },
+  "& .MuiInputBase-root:hover": {
+    transform: "translateY(-1px)",
   },
   "& .MuiInputBase-input": {
     fontFamily: MONTSERRAT,
-    padding: "14px",
+    padding: "15px",
   },
   "& .MuiInputLabel-root": {
     fontFamily: MONTSERRAT,
   },
   "& .MuiOutlinedInput-notchedOutline": {
-    borderColor: "#cbd5e1",
-  },
-  "&:hover .MuiOutlinedInput-notchedOutline": {
-    borderColor: "#0ea5e9",
-  },
-  "& .Mui-focused .MuiOutlinedInput-notchedOutline": {
-    borderColor: "#0284c7",
-    boxShadow: "0 0 0 3px rgba(14,165,233,0.15)",
+    border: "none",
   },
 };
 
@@ -67,7 +66,6 @@ const RequestForm: React.FC = () => {
     emergencyArea: "",
   });
 
-  /* ---------------- VAN LIST FROM DATABASE ---------------- */
   const [vanList, setVanList] = useState<string[]>([]);
 
   useEffect(() => {
@@ -76,21 +74,14 @@ const RequestForm: React.FC = () => {
         const res = await fetch(`${API_HOST}/Vanaddinfo`);
         if (!res.ok) throw new Error();
         const data = await res.json();
-
-        const names = Array.isArray(data)
-          ? data.map((v) => v.vanname)
-          : [];
-
-        setVanList(names);
+        setVanList(Array.isArray(data) ? data.map((v) => v.vanname) : []);
       } catch {
         console.error("Failed to load vans");
       }
     };
-
     fetchVans();
   }, []);
 
-  /* ---------------- HANDLE CHANGE ---------------- */
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
   ) => {
@@ -98,24 +89,15 @@ const RequestForm: React.FC = () => {
     setForm((prev) => ({ ...prev, [name]: value }));
   };
 
-  /* ---------------- CONDITIONS ---------------- */
-  const isFullBooking =
-    form.requestType === "Van Not Available – Need Full Booking";
-  const isEventBooking =
-    form.requestType === "Van For Event Booking";
-  const isCancelFull =
-    form.requestType === "Cancel Full Booking";
-  const isCancelSeat =
-    form.requestType === "Cancel Seat Booking";
-  const isEmergency =
-    form.requestType === "Emergency Service";
+  const isFullBooking = form.requestType === "Van Not Available – Need Full Booking";
+  const isEventBooking = form.requestType === "Van For Event Booking";
+  const isCancelFull = form.requestType === "Cancel Full Booking";
+  const isCancelSeat = form.requestType === "Cancel Seat Booking";
+  const isEmergency = form.requestType === "Emergency Service";
 
-  const showDate =
-    isFullBooking || isEventBooking || isCancelFull || isCancelSeat;
-  const showVan =
-    isFullBooking || isEventBooking || isCancelFull || isCancelSeat;
+  const showDate = isFullBooking || isEventBooking || isCancelFull || isCancelSeat;
+  const showVan = showDate;
 
-  /* ---------------- WHATSAPP ---------------- */
   const openWhatsApp = () => {
     const message = `
 🚐 New Van Request
@@ -128,24 +110,17 @@ ${showDate ? `Booking Date: ${form.bookingDate}` : ""}
 ${showVan ? `Van: ${form.van}` : ""}
 ${form.seatNumber ? `Seat Number: ${form.seatNumber}` : ""}
 
-${
-  isEmergency
-    ? `Emergency Reason: ${form.emergencyReason}
-Area / City: ${form.emergencyArea}`
-    : ""
-}
+${isEmergency ? `Emergency Reason: ${form.emergencyReason}\nArea: ${form.emergencyArea}` : ""}
 
 Description:
 ${form.description}
     `;
-
     window.open(
       `https://wa.me/${ADMIN_WHATSAPP}?text=${encodeURIComponent(message)}`,
       "_blank"
     );
   };
 
-  /* ---------------- SUBMIT ---------------- */
   const handleSubmit = async () => {
     try {
       const resp = await fetch(`${API_HOST}/Request`, {
@@ -153,7 +128,6 @@ ${form.description}
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(form),
       });
-
       if (!resp.ok) throw new Error();
 
       await Swal.fire({
@@ -191,8 +165,9 @@ ${form.description}
         display: "flex",
         alignItems: "center",
         justifyContent: "center",
-        py: 8,
-        background: "linear-gradient(135deg, #0f172a, #020617)",
+        background:
+          "radial-gradient(circle at top, #1e293b, #020617)",
+        perspective: "1400px",
         fontFamily: MONTSERRAT,
       }}
     >
@@ -200,20 +175,26 @@ ${form.description}
         <Box
           sx={{
             p: 4,
-            borderRadius: 4,
+            borderRadius: 5,
             background:
-              "linear-gradient(180deg, rgba(255,255,255,0.95), rgba(255,255,255,0.85))",
-            boxShadow: "0 30px 60px rgba(0,0,0,0.35)",
+              "linear-gradient(145deg, rgba(255,255,255,0.95), rgba(240,240,240,0.85))",
+            boxShadow:
+              "20px 20px 50px rgba(0,0,0,0.45), -10px -10px 25px rgba(255,255,255,0.4)",
+            transformStyle: "preserve-3d",
+            transition: "all 0.4s ease",
+            "&:hover": {
+              transform: "rotateX(2deg) rotateY(-2deg) translateY(-6px)",
+            },
           }}
         >
           <Typography
             variant="h4"
             textAlign="center"
             mb={3}
-            fontWeight={800}
+            fontWeight={700}
             sx={{ fontFamily: MONTSERRAT }}
           >
-            Van Request Form
+           Van Request Form
           </Typography>
 
           <TextField fullWidth label="Customer Name" name="customerName" value={form.customerName} onChange={handleChange} margin="normal" sx={fieldSx} />
@@ -260,13 +241,19 @@ ${form.description}
             onClick={handleSubmit}
             sx={{
               mt: 3,
-              py: 1.4,
-              borderRadius: 3,
+              py: 1.5,
+              borderRadius: 4,
               fontFamily: MONTSERRAT,
-              fontSize: 17,
+              fontSize: 18,
               textTransform: "none",
-              background: "linear-gradient(135deg, #06b6d4, #0ea5e9)",
-              boxShadow: "0 12px 25px rgba(14,165,233,0.45)",
+              background: "linear-gradient(145deg, #06b6d4, #0ea5e9)",
+              boxShadow:
+                "0 12px 25px rgba(14,165,233,0.6)",
+              transition: "all 0.2s ease",
+              "&:active": {
+                transform: "translateY(3px)",
+                boxShadow: "0 6px 15px rgba(14,165,233,0.5)",
+              },
             }}
           >
             Submit Request

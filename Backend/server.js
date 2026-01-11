@@ -9,6 +9,8 @@ import Inquirysection from "./routes/Inquiry.route.js";
 import Slidersection from "./routes/Slidersection.route.js";
 import Requestrouter from "./routes/Request.route.js";
 import Vanaddsection from "./routes/Vanadd.route.js";
+import path from "path";  // << add this line
+import Bookingrouter from "./routes/bookingRoutes.js";
 
 // Create an instance of Express
 const app = express();
@@ -23,7 +25,7 @@ app.use(
   cors({
     origin: [
       "https://van-booking-rho.vercel.app",
-      "https://van-booking-booking.vercel.app",
+      "http://localhost:8001",
     ],
     methods: ["GET", "POST", "PUT", "DELETE"],
     credentials: true,
@@ -39,15 +41,18 @@ app.get("/", (req, res) => {
   res.send("Server is running");
 });
 
+
+// Static files
+app.use("/uploads", express.static(path.join("uploads")));
+
 //ADMIN -> MIDDLEWARE -> SERVER
 app.use('/Adminlogin', AccountAdminloginrouter);
 app.use('/Adminregister',AccountAdminrouter);
 app.use('/Slidersection',Slidersection);
 app.use('/inquiry',Inquirysection);
 app.use('/Request',Requestrouter);
-app.use('/Vanaddinfo',Vanaddsection);
-
-
+app.use("/booking",Bookingrouter);
+app.use("/Vanaddinfo", Vanaddsection);
 
 // Start server
 const port = 8001;

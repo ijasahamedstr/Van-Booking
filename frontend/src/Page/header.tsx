@@ -70,8 +70,8 @@ export default function EtsyStyleHeader() {
     </Box>
   );
 
-  const headerBg = isMobile ? "#ffffff" : "#f9fafb";
-  const drawerBg = isMobile ? "#ffffff" : "#fbfcfc";
+  const headerBg = isMobile ? "#fbfbfb" : "#fbfbfb";
+  const drawerBg = isMobile ? "#fbfbfb" : "#fbfbfb";
 
   return (
     <>

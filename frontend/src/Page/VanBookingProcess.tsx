@@ -1,4 +1,4 @@
-import { Box, Typography, Container } from "@mui/material";
+import { Box, Typography, Container, useMediaQuery } from "@mui/material";
 import { useEffect, useState } from "react";
 
 /* ---------------- FONT ---------------- */
@@ -26,9 +26,13 @@ const steps = [
 
 /* ---------------- COMPONENT ---------------- */
 const VanBookingProcess = () => {
+  const isDesktop = useMediaQuery("(min-width:900px)");
   const [activeStep, setActiveStep] = useState(0);
 
+  /* 🔹 DESKTOP TIME ONLY */
   useEffect(() => {
+    if (!isDesktop) return;
+
     const timer = setInterval(() => {
       setActiveStep((prev) =>
         prev < steps.length - 1 ? prev + 1 : 0
@@ -36,16 +40,17 @@ const VanBookingProcess = () => {
     }, 2200);
 
     return () => clearInterval(timer);
-  }, []);
+  }, [isDesktop]);
 
-  const progressPercent =
-    (activeStep / (steps.length - 1)) * 100;
+  const progressPercent = isDesktop
+    ? (activeStep / (steps.length - 1)) * 100
+    : 0;
 
   return (
     <Box
       sx={{
         py: { xs: 6, md: 8 },
-        background: "#fff",
+        backgroundColor: "#fff",
         fontFamily: MONTSERRAT,
       }}
     >
@@ -54,39 +59,42 @@ const VanBookingProcess = () => {
         <Typography
           align="center"
           sx={{
-            fontSize: { xs: 22, md: 32 },
-            fontWeight: 900,
-            mb: 6,
+            fontSize: { xs: 20, sm: 24, md: 32 },
+            fontWeight: 700,
+            mb: { xs: 5, md: 7 },
+            fontFamily:MONTSERRAT,
           }}
         >
           How Van Booking Works
         </Typography>
 
-        {/* PROGRESS BAR WRAPPER */}
-        <Box sx={{ position: "relative", px: 2 }}>
+        {/* PROGRESS WRAPPER */}
+        <Box sx={{ position: "relative", px: { xs: 1, sm: 3 } }}>
           {/* BASE BAR */}
           <Box
             sx={{
               height: 6,
               borderRadius: 6,
-              background: "#e5e7eb",
+              backgroundColor: "#e5e7eb",
             }}
           />
 
-          {/* ACTIVE BAR */}
-          <Box
-            sx={{
-              position: "absolute",
-              top: 0,
-              left: 0,
-              height: 6,
-              width: `${progressPercent}%`,
-              borderRadius: 6,
-              background:
-                "linear-gradient(90deg, #06f9f3, #0ea5e9)",
-              transition: "width 0.6s ease",
-            }}
-          />
+          {/* ACTIVE BAR – DESKTOP ONLY */}
+          {isDesktop && (
+            <Box
+              sx={{
+                position: "absolute",
+                top: 0,
+                left: 0,
+                height: 6,
+                width: `${progressPercent}%`,
+                borderRadius: 6,
+                background:
+                  "linear-gradient(90deg, #06f9f3, #0ea5e9)",
+                transition: "width 0.6s ease",
+              }}
+            />
+          )}
 
           {/* STEPS */}
           <Box
@@ -94,39 +102,33 @@ const VanBookingProcess = () => {
               display: "flex",
               justifyContent: "space-between",
               position: "absolute",
-              top: -28,
+              top: { xs: -24, md: -36 },
               left: 0,
               right: 0,
             }}
           >
             {steps.map((step, index) => {
-              const isActive = index <= activeStep;
+              const isActive = isDesktop ? index <= activeStep : true;
 
               return (
-                <Box
-                  key={index}
-                  sx={{
-                    textAlign: "center",
-                    width: "0%",
-                  }}
-                >
-                  {/* ROUND STEP */}
+                <Box key={index} sx={{ textAlign: "center" }}>
+                  {/* CIRCLE */}
                   <Box
                     sx={{
-                      width: 56,
-                      height: 56,
+                      width: { xs: 44, sm: 48, md: 80 },
+                      height: { xs: 44, sm: 48, md: 80 },
                       mx: "auto",
-                      mb: 1,
+                      mb: 1.5,
                       borderRadius: "50%",
-                      background: "#fff",
+                      backgroundColor: "#fff",
                       border: isActive
-                        ? "3px solid #06f9f3"
+                        ? "4px solid #06f9f3"
                         : "2px solid #cbd5e1",
                       display: "flex",
                       alignItems: "center",
                       justifyContent: "center",
                       boxShadow: isActive
-                        ? "0 10px 25px rgba(6,249,243,0.35)"
+                        ? "0 10px 30px rgba(6,249,243,0.45)"
                         : "none",
                       transition: "all 0.4s ease",
                     }}
@@ -136,11 +138,11 @@ const VanBookingProcess = () => {
                       src={step.image}
                       alt={step.title}
                       sx={{
-                        width: 26,
+                        width: { xs: 22, sm: 24, md: 42 }, // 🔥 BIG IMAGE DESKTOP
+                        opacity: isActive ? 1 : 0.5,
                         filter: isActive
                           ? "none"
                           : "grayscale(100%)",
-                        opacity: isActive ? 1 : 0.6,
                         transition: "0.3s",
                       }}
                     />
@@ -149,9 +151,11 @@ const VanBookingProcess = () => {
                   {/* LABEL */}
                   <Typography
                     sx={{
-                      fontSize: { xs: 11, md: 14 },
+                      fontSize: { xs: 11, sm: 12, md: 15 },
                       fontWeight: isActive ? 700 : 500,
                       color: isActive ? "#0f172a" : "#64748b",
+                      whiteSpace: "nowrap",
+                      fontFamily:MONTSERRAT, 
                     }}
                   >
                     {step.title}

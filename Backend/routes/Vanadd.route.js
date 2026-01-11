@@ -1,5 +1,5 @@
 import express from 'express';
-import { VanCreate, VanDelete, VanIndex, VanSingleDetails, VanUpdate } from '../controller/Vanadd.Controller.js';
+import { getBookedSeats, VanCreate, VanDelete, VanIndex, VanSingleDetails, VanUpdate } from '../controller/Vanadd.Controller.js';
 
 // Create a new router instance
 const Vanaddsection = express.Router();
@@ -19,6 +19,9 @@ Vanaddsection.delete('/:id',VanDelete);
 
 //Update Data Register
 Vanaddsection.put('/:id',VanUpdate);
+
+Vanaddsection.get("/countSeats", getBookedSeats);
+
 
 
 export default Vanaddsection;

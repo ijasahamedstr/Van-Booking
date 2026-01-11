@@ -1,5 +1,6 @@
 import moment from "moment";
 import VanaddModels from "../models/Vanadd.models.js";
+import Booking from "../models/Booking.model.js";
 
 /* ================= CREATE VAN ================= */
 export const VanCreate = async (req, res) => {
@@ -40,14 +41,37 @@ export const VanCreate = async (req, res) => {
     }
 };
 
-/* ================= GET ALL VANS ================= */
+
 export const VanIndex = async (req, res) => {
-    try {
-        const vans = await VanaddModels.find().sort({ createdAt: -1 });
-        res.status(200).json(vans);
-    } catch (error) {
-        res.status(500).json({ message: error.message });
-    }
+  try {
+    const vans = await VanaddModels.find({});
+    res.json(vans);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+};
+
+export const getBookedSeats = async (req, res) => {
+  const { vanname, date } = req.query;
+
+  if (!vanname || !date) {
+    return res.status(400).json({ message: "Van name and date required" });
+  }
+
+  try {
+    const bookings = await Booking.find({ van: vanname, bookingDate: date });
+
+    const bookedSeats = []; // no ": string[]" here
+
+    bookings.forEach((b) => {
+      if (b.seatNumber) bookedSeats.push(b.seatNumber);
+      if (Array.isArray(b.seatNumbers)) bookedSeats.push(...b.seatNumbers);
+    });
+
+    res.json({ bookedSeats });
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
 };
 
 /* ================= GET SINGLE VAN ================= */

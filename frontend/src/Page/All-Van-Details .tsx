@@ -12,7 +12,7 @@ import { useNavigate } from "react-router-dom";
 
 /* ---------------- CONFIG & FONT ---------------- */
 
-const TAJAWAL = '"Montserrat", sans-serif';
+const MONTSERRAT = '"Montserrat", sans-serif';
 const API_HOST = import.meta.env.VITE_API_HOST as string;
 
 /* ---------------- INTERFACE ---------------- */
@@ -30,19 +30,17 @@ interface VanData {
 
 const VanCards: React.FC = () => {
   const [vans, setVans] = useState<VanData[]>([]);
-  const [loading, setLoading] = useState<boolean>(true);
+  const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-   const navigate = useNavigate(); // ✅ FIX
+  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchVans = async () => {
       try {
-        setLoading(true);
         const resp = await fetch(`${API_HOST}/Vanaddinfo`);
-        if (!resp.ok) throw new Error("Failed to fetch data from the server");
-        const data = await resp.json();
-        setVans(data);
+        if (!resp.ok) throw new Error("Failed to fetch vans");
+        setVans(await resp.json());
       } catch (err: any) {
         setError(err.message);
       } finally {
@@ -56,11 +54,11 @@ const VanCards: React.FC = () => {
     return (
       <Box
         sx={{
+          height: "80vh",
           display: "flex",
           justifyContent: "center",
           alignItems: "center",
-          height: "80vh",
-          fontFamily: TAJAWAL,
+          fontFamily: MONTSERRAT,
         }}
       >
         <CircularProgress color="warning" />
@@ -70,22 +68,22 @@ const VanCards: React.FC = () => {
 
   if (error) {
     return (
-      <Box sx={{ textAlign: "center", py: 10, fontFamily: TAJAWAL }}>
-        <Typography color="error" fontFamily={TAJAWAL}>
-          Error: {error}
+      <Box sx={{ textAlign: "center", py: 10, fontFamily: MONTSERRAT }}>
+        <Typography color="error" fontFamily={MONTSERRAT}>
+          {error}
         </Typography>
-        <Button
-          onClick={() => window.location.reload()}
-          sx={{ mt: 2, fontFamily: TAJAWAL }}
-        >
-          Retry
-        </Button>
       </Box>
     );
   }
 
   return (
-    <Box sx={{ py: 8, background: "#f4f6f8", fontFamily: TAJAWAL }}>
+    <Box
+      sx={{
+        py: 9,
+        background: "#f2f4f7",
+        fontFamily: MONTSERRAT,
+      }}
+    >
       <Container maxWidth="xl">
         <Box
           sx={{
@@ -93,153 +91,164 @@ const VanCards: React.FC = () => {
             gridTemplateColumns: {
               xs: "1fr",
               sm: "1fr 1fr",
-              md: "repeat(3, 1fr)",
+              md: "repeat(3,1fr)",
             },
-            gap: 4,
+            gap: 5,
+            perspective: "1400px",
           }}
         >
           {vans.map((van) => (
-            <Card
+            <Box
               key={van._id}
               sx={{
-                p: 3,
-                borderRadius: 5,
-                background: "#ffffff",
-                boxShadow: "0 10px 30px rgba(0,0,0,0.12)",
-                transition: "all 0.4s ease",
-                fontFamily: TAJAWAL,
+                transformStyle: "preserve-3d",
+                transition: "transform .5s ease",
+                fontFamily: MONTSERRAT,
                 "&:hover": {
-                  transform: "translateY(-10px)",
-                  boxShadow: "0 18px 45px rgba(0,0,0,0.18)",
+                  transform: "rotateX(10deg) rotateY(-10deg)",
                 },
-                display: "flex",
-                flexDirection: "column",
               }}
             >
-              {/* IMAGE */}
-              <Box
+              <Card
                 sx={{
-                  height: 200,
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                  mb: 3,
-                  perspective: "1000px",
+                  position: "relative",
+                  p: 3,
+                  height: "100%",
+                  borderRadius: 5,
+                  background: "linear-gradient(180deg,#ffffff,#f8fafc)",
+                  boxShadow: "0 25px 55px rgba(0,0,0,.18)",
+                  transformStyle: "preserve-3d",
+                  transition: "all .5s ease",
+                  fontFamily: MONTSERRAT,
+                  "&:hover": {
+                    boxShadow: "0 40px 85px rgba(0,0,0,.28)",
+                  },
                 }}
               >
+                {/* GLOW */}
                 <Box
                   sx={{
-                    position: "relative",
-                    transformStyle: "preserve-3d",
-                    transition: "transform 0.6s ease",
-                    "&:hover": {
-                      transform: "rotateX(8deg) rotateY(-8deg) scale(1.05)",
-                    },
+                    position: "absolute",
+                    inset: 0,
+                    borderRadius: 5,
+                    background:
+                      "radial-gradient(circle at top, rgba(255,152,0,.25), transparent 60%)",
+                    transform: "translateZ(-60px)",
+                  }}
+                />
+
+                {/* IMAGE */}
+                <Box
+                  sx={{
+                    height: 190,
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                    transform: "translateZ(60px)",
                   }}
                 >
-                  <Box
-                    sx={{
-                      position: "absolute",
-                      inset: 0,
-                      transform: "translateZ(-40px)",
-                      filter: "blur(30px)",
-                      background: "rgba(0,0,0,0.25)",
-                      borderRadius: "50%",
-                    }}
-                  />
                   <Box
                     component="img"
                     src={van.Image[0]}
                     alt={van.vanname}
                     sx={{
-                      maxWidth: "100%",
                       maxHeight: 170,
-                      transform: "translateZ(40px)",
-                      filter: "drop-shadow(0 25px 35px rgba(0,0,0,0.35))",
+                      filter:
+                        "drop-shadow(0 30px 40px rgba(0,0,0,.35))",
+                      transition: "transform .5s ease",
+                      "&:hover": {
+                        transform: "scale(1.08)",
+                      },
                     }}
                   />
                 </Box>
-              </Box>
 
-              {/* TITLE */}
-              <Typography
-                sx={{
-                  fontWeight: 800,
-                  fontSize: 18,
-                  color: "#ff9800",
-                  mb: 1,
-                  fontFamily: TAJAWAL,
-                }}
-              >
-                {van.vanname}
-              </Typography>
+                {/* CONTENT */}
+                <Box
+                  sx={{
+                    transform: "translateZ(40px)",
+                    fontFamily: MONTSERRAT,
+                  }}
+                >
+                  <Typography
+                    sx={{
+                      fontWeight: 800,
+                      fontSize: 18,
+                      color: "#ff9800",
+                      mb: 1,
+                      fontFamily: MONTSERRAT,
+                    }}
+                  >
+                    {van.vanname}
+                  </Typography>
 
-              <Divider sx={{ mb: 2 }} />
+                  <Divider sx={{ mb: 2 }} />
 
-              {/* DETAILS */}
-              <Box
-                sx={{
-                  display: "grid",
-                  gridTemplateColumns: "1fr 1fr",
-                  gap: 1,
-                  fontSize: 13,
-                  fontFamily: TAJAWAL,
-                }}
-              >
-                <Typography fontFamily={TAJAWAL} color="text.secondary">
-                  Seats
-                </Typography>
-                <Typography fontFamily={TAJAWAL} fontWeight={600}>
-                  {van.Seat} Seater
-                </Typography>
+                  <Box
+                    sx={{
+                      display: "grid",
+                      gridTemplateColumns: "1fr 1fr",
+                      gap: 1,
+                      fontFamily: MONTSERRAT,
+                    }}
+                  >
+                    <Typography color="text.secondary" fontFamily={MONTSERRAT}>
+                      Seats
+                    </Typography>
+                    <Typography fontWeight={600} fontFamily={MONTSERRAT}>
+                      {van.Seat}
+                    </Typography>
 
-                <Typography fontFamily={TAJAWAL} color="text.secondary">
-                  AC Status
-                </Typography>
-                <Typography fontFamily={TAJAWAL} fontWeight={600}>
-                  {van.Type}
-                </Typography>
+                    <Typography color="text.secondary" fontFamily={MONTSERRAT}>
+                      AC
+                    </Typography>
+                    <Typography fontWeight={600} fontFamily={MONTSERRAT}>
+                      {van.Type}
+                    </Typography>
 
-                <Typography fontFamily={TAJAWAL} color="text.secondary">
-                  Transmission
-                </Typography>
-                <Typography fontFamily={TAJAWAL} fontWeight={600}>
-                  {van.type2}
-                </Typography>
-              </Box>
+                    <Typography color="text.secondary" fontFamily={MONTSERRAT}>
+                      Transmission
+                    </Typography>
+                    <Typography fontWeight={600} fontFamily={MONTSERRAT}>
+                      {van.type2}
+                    </Typography>
+                  </Box>
 
-              {/* DESCRIPTION */}
-              <Typography
-                fontSize={12}
-                color="text.secondary"
-                mt={2}
-                mb={3}
-                fontFamily={TAJAWAL}
-              >
-                Professional {van.vanname} available for booking.
-              </Typography>
+                  <Typography
+                    fontSize={12}
+                    color="text.secondary"
+                    mt={2}
+                    fontFamily={MONTSERRAT}
+                  >
+                    Professional {van.vanname} available for booking.
+                  </Typography>
+                </Box>
 
-              {/* BUTTON */}
-              <Button
-                variant="contained"
-                fullWidth
-                onClick={() => navigate(`/van/${van._id}`)}
-                sx={{
-                  mt: "auto",
-                  py: 1.3,
-                  borderRadius: 3,
-                  background: "linear-gradient(135deg,#ff9800,#ff5722)",
-                  fontWeight: 700,
-                  textTransform: "none",
-                  fontFamily: TAJAWAL,
-                  "&:hover": {
-                    background: "linear-gradient(135deg,#ff5722,#ff9800)",
-                  },
-                }}
-              >
-                View Details
-              </Button>
-            </Card>
+                {/* BUTTON */}
+                <Button
+                  fullWidth
+                  onClick={() => navigate(`/van/${van._id}`)}
+                  sx={{
+                    mt: 3,
+                    py: 1.3,
+                    borderRadius: 3,
+                    background:
+                      "linear-gradient(135deg,#ff9800,#ff5722)",
+                    color: "#fff",
+                    fontWeight: 700,
+                    textTransform: "none",
+                    fontFamily: MONTSERRAT,
+                    transform: "translateZ(50px)",
+                    "&:hover": {
+                      background:
+                        "linear-gradient(135deg,#ff5722,#ff9800)",
+                    },
+                  }}
+                >
+                  View Details
+                </Button>
+              </Card>
+            </Box>
           ))}
         </Box>
       </Container>
