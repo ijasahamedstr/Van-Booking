@@ -35,7 +35,6 @@ import {
   InputAdornment,
   Stack,
   Fade,
-  Grow,
   Slide,
   useTheme,
   useMediaQuery,
@@ -50,7 +49,6 @@ import {
   Tooltip,
   Drawer,
   Chip,
-  Grid,
   Avatar,
   LinearProgress,
 } from "@mui/material";
@@ -65,8 +63,6 @@ import DirectionsBusIcon from "@mui/icons-material/DirectionsBus";
 import PublicIcon from "@mui/icons-material/Public";
 import AccessTimeIcon from "@mui/icons-material/AccessTime";
 import AirplaneTicketIcon from "@mui/icons-material/AirplaneTicket";
-import CloudUploadIcon from "@mui/icons-material/CloudUpload";
-import InfoIcon from "@mui/icons-material/Info";
 import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 import ErrorIcon from "@mui/icons-material/Error";
 import RestartAltIcon from "@mui/icons-material/RestartAlt";
@@ -231,15 +227,6 @@ interface ValidationErrors {
 /* =================================================================================================
  * 4. UTILITIES & HELPERS
  * ================================================================================================= */
-
-const Utils = {
-  // Mock Van Features Generator
-  getVanFeatures: (seatType: string) => {
-    const base = ["AC", "Music"];
-    if (seatType === "14") return [...base, "Extra Luggage", "Reclining Seats"];
-    return [...base, "USB Charging"];
-  },
-};
 
 /* =================================================================================================
  * 5. LAYOUT DATA DEFINITIONS
