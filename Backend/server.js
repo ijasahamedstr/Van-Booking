@@ -24,7 +24,7 @@ app.use(express.urlencoded({ extended: true }));
 app.use(
   cors({
     origin: [
-      "https://van-booking-rho.vercel.app",
+      "http://localhost:5173",
       "http://localhost:8001",
     ],
     methods: ["GET", "POST", "PUT", "DELETE"],
