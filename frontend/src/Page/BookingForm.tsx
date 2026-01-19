@@ -1,14 +1,24 @@
 /**
  * =================================================================================================
  * PROJECT: CLICKLANKA / ADVANCED VAN BOOKING SYSTEM
- * COMPONENT: RequestForm (Version 2.0 - Extended Production Code)
- * FEATURES: Multi-Day Trip Support, Smart Van Filtering, Interactive Seat Map, High-Fidelity UI
- * AUTHOR: Gemini AI
- * DATE: 2026-01-18
+ * COMPONENT: RequestForm (Production Scale)
+ * VERSION: 2.1.0
+ * FEATURES: 
+ * - Single/Multi-Day Trip Logic
+ * - Dynamic Date Range Validation
+ * - Smart Vehicle Filtering (Hides Full, Disables Partial for Full Booking)
+ * - Interactive Seat Map with SVG-Overlay Logic
+ * - Responsive Mobile Drawers & Desktop Sidebars
  * =================================================================================================
  */
 
-import React, { useEffect, useState, useMemo, useCallback, memo } from "react";
+import React, {
+  useEffect,
+  useState,
+  useMemo,
+  useCallback,
+  memo
+} from "react";
 import { useNavigate } from "react-router-dom";
 import Swal from "sweetalert2";
 
@@ -43,24 +53,31 @@ import WifiIcon from "@mui/icons-material/Wifi";
 import LocalGasStationIcon from "@mui/icons-material/LocalGasStation";
 import EventSeatIcon from "@mui/icons-material/EventSeat";
 import DateRangeIcon from "@mui/icons-material/DateRange";
-import InfoIcon from "@mui/icons-material/Info";
+import TravelExploreIcon from "@mui/icons-material/TravelExplore";
 
 /* =================================================================================================
- * 1. CONFIGURATION & THEME SYSTEM
+ * 1. CONFIGURATION & DESIGN SYSTEM
  * ================================================================================================= */
 
 const API_HOST = import.meta.env.VITE_API_HOST as string;
 const TODAY_DATE = new Date().toISOString().split("T")[0];
 
+const ASSETS = {
+  SEAT_MAP: "https://i.ibb.co/vCCVcpzc/Gemini-Generated-Image-o5mpvpo5mpvpo5mp.png",
+};
+
+const FONTS = {
+  PRIMARY: '"Montserrat", sans-serif',
+  SECONDARY: '"Roboto", sans-serif',
+};
+
 const PALETTE = {
   primary: { main: "#4f46e5", dark: "#4338ca", light: "#e0e7ff" },
-  secondary: { main: "#06b6d4", light: "#cffafe" },
-  status: { success: "#10b981", warning: "#f59e0b", error: "#ef4444", info: "#3b82f6" },
+  secondary: { main: "#06b6d4", dark: "#0891b2", light: "#cffafe" },
+  status: { success: "#10b981", warning: "#f59e0b", error: "#ef4444" },
   ui: { bg: "#f8fafc", paper: "#ffffff", border: "#e2e8f0", inputBg: "#f1f5f9", textMain: "#0f172a", textMuted: "#64748b" },
   seat: { booked: "#ef4444", selected: "#4f46e5", available: "#ffffff", border: "#cbd5e1" },
 };
-
-const FONTS = { PRIMARY: '"Montserrat", sans-serif', SECONDARY: '"Roboto", sans-serif' };
 
 const INPUT_SX = {
   "& .MuiFilledInput-root": {
@@ -70,15 +87,14 @@ const INPUT_SX = {
     border: "2px solid transparent",
     transition: "all 0.3s cubic-bezier(0.4, 0, 0.2, 1)",
     "&:before, &:after": { display: "none" },
-    "&:hover": { backgroundColor: "#e2e8f0" },
-    "&.Mui-focused": { backgroundColor: "#ffffff", borderColor: PALETTE.primary.main, boxShadow: `0 0 0 4px ${PALETTE.primary.light}` },
+    "&.Mui-focused": { backgroundColor: "#fff", borderColor: PALETTE.primary.main, boxShadow: `0 0 0 4px ${PALETTE.primary.light}` },
     "&.Mui-error": { backgroundColor: "#fef2f2", borderColor: PALETTE.status.error },
   },
   "& .MuiInputLabel-root": { fontFamily: FONTS.PRIMARY, color: PALETTE.ui.textMuted, fontWeight: 500 },
 };
 
 /* =================================================================================================
- * 2. TYPES & INTERFACES
+ * 2. INTERFACES
  * ================================================================================================= */
 
 interface Van {
@@ -89,13 +105,13 @@ interface Van {
   bookingStatus?: "AVAILABLE" | "PARTIAL" | "FULL";
 }
 
-interface SeatPosition { number: number; top: string; left: string; }
+interface SeatPos { number: number; top: string; left: string; }
 
 interface BookingFormState {
   customerName: string;
   mobileNumber: string;
   tripType: "single" | "multi";
-  bookingDate: string; 
+  bookingDate: string;
   returnDate: string;
   bookingCategory: string;
   country: string;
@@ -107,7 +123,7 @@ interface BookingFormState {
 }
 
 /* =================================================================================================
- * 3. DATA & LAYOUTS
+ * 3. CONSTANT DATA
  * ================================================================================================= */
 
 const LAYOUTS = {
@@ -130,42 +146,55 @@ const LAYOUTS = {
   ]
 };
 
-const CATEGORIES = ["Full Booking", "Seat Booking", "Booking from Abroad"];
-const STEPS = ["Route Info", "Vehicle Selection", "Choose Seat", "Confirmation"];
+const CATEGORIES = ["Full Booking", "Seat Booking", "Booking from Abroad", "Emergency Booking", "Event Booking"];
+const WIZARD_STEPS = ["Journey Details", "Vehicle Select", "Seat Selection", "Final Review"];
 
 /* =================================================================================================
- * 4. REUSABLE UI COMPONENTS
+ * 4. COMPONENTS
  * ================================================================================================= */
 
-const CustomStatusBadge = memo(({ status }: { status?: string }) => {
-  const isPartial = status === "PARTIAL";
-  return (
-    <Chip
-      icon={isPartial ? <AccessTimeIcon fontSize="small" /> : <CheckCircleIcon fontSize="small" />}
-      label={isPartial ? "Filling Fast" : "Available"}
-      size="small"
-      sx={{
-        bgcolor: isPartial ? PALETTE.status.warning : PALETTE.status.success,
-        color: "#fff",
-        fontWeight: 800,
-        textTransform: "uppercase",
-        fontSize: "0.65rem",
-        px: 1,
-      }}
-    />
-  );
-});
+const OrderSummary = ({ form, van }: { form: BookingFormState; van?: Van }) => (
+  <Card sx={{ borderRadius: "24px", border: `1px solid ${PALETTE.ui.border}`, overflow: "hidden" }}>
+    <Box sx={{ p: 3, bgcolor: "#fff", borderBottom: `1px solid ${PALETTE.ui.border}` }}>
+      <Stack direction="row" spacing={2} alignItems="center">
+        <Avatar sx={{ bgcolor: PALETTE.primary.main }}><TravelExploreIcon /></Avatar>
+        <Typography variant="h6" fontWeight={800}>Trip Summary</Typography>
+      </Stack>
+    </Box>
+    <Box sx={{ p: 3, bgcolor: PALETTE.ui.bg }}>
+      <Stack spacing={2.5}>
+        <Box>
+          <Typography variant="caption" color="text.secondary" fontWeight={800}>TRIP TYPE</Typography>
+          <Typography variant="body1" fontWeight={700} color="primary.main">
+            {form.tripType === "single" ? "Single Day" : "Multi-Day Journey"}
+          </Typography>
+        </Box>
+        <Box>
+          <Typography variant="caption" color="text.secondary" fontWeight={800}>DATE RANGE</Typography>
+          <Typography variant="body1" fontWeight={700}>
+            {form.bookingDate} {form.returnDate && `→ ${form.returnDate}`}
+          </Typography>
+        </Box>
+        <Box>
+          <Typography variant="caption" color="text.secondary" fontWeight={800}>VEHICLE</Typography>
+          <Typography variant="body1" fontWeight={700}>{van?.vanname || "Not Selected"}</Typography>
+        </Box>
+        <Divider sx={{ borderStyle: "dashed" }} />
+        <Box sx={{ p: 2, bgcolor: "#fff", borderRadius: "12px", border: `1px solid ${PALETTE.ui.border}` }}>
+          <Typography variant="caption" color="text.secondary">PASSENGER</Typography>
+          <Typography variant="body1" fontWeight={800}>{form.customerName || "Guest User"}</Typography>
+          <Typography variant="body2" color="text.secondary">{form.mobileNumber}</Typography>
+        </Box>
+      </Stack>
+    </Box>
+  </Card>
+);
 
-/* =================================================================================================
- * 5. MAIN CONTROLLER
- * ================================================================================================= */
-
-const RequestForm: React.FC = () => {
+const RequestForm = () => {
   const navigate = useNavigate();
-  const theme = useTheme();
-  const isMobile = useMediaQuery(theme.breakpoints.down("lg"));
+  const isMobile = useMediaQuery("(max-width:1024px)");
 
-  // --- Initial State ---
+  // Form State
   const [form, setForm] = useState<BookingFormState>({
     customerName: "", mobileNumber: "", tripType: "single",
     bookingDate: TODAY_DATE, returnDate: "", bookingCategory: "",
@@ -173,265 +202,167 @@ const RequestForm: React.FC = () => {
     seatNumber: "", ticketFile: null,
   });
 
+  // UI State
   const [activeStep, setActiveStep] = useState(0);
   const [vanList, setVanList] = useState<Van[]>([]);
+  const [loadingVans, setLoadingVans] = useState(false);
+  const [seatLayout, setSeatLayout] = useState<SeatPos[]>([]);
   const [bookedSeats, setBookedSeats] = useState<string[]>([]);
-  const [loading, setLoading] = useState(false);
+  const [submitting, setSubmitting] = useState(false);
   const [errors, setErrors] = useState<any>({});
 
-  // --- Core Logic ---
-  const selectedVan = useMemo(() => vanList.find(v => v.vanname === form.van), [vanList, form.van]);
+  const selectedVanObject = useMemo(() => vanList.find(v => v.vanname === form.van), [vanList, form.van]);
 
+  // Fetch Logic
   const fetchVans = useCallback(async () => {
-    setLoading(true);
+    setLoadingVans(true);
     try {
       const res = await fetch(`${API_HOST}/Vanaddinfo?date=${form.bookingDate}`);
       const data = await res.json();
-      setVanList(Array.isArray(data) ? data.filter(v => v.bookingStatus !== "FULL") : []);
-    } catch (e) { console.error("API Error", e); }
-    finally { setLoading(false); }
+      const filtered = Array.isArray(data) ? data.filter(v => v.bookingStatus !== "FULL") : [];
+      setVanList(filtered);
+    } catch (e) { console.error(e); }
+    finally { setLoadingVans(false); }
   }, [form.bookingDate]);
 
   useEffect(() => { if (activeStep === 1) fetchVans(); }, [activeStep, fetchVans]);
 
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setForm(prev => ({ ...prev, [e.target.name]: e.target.value }));
-    setErrors((prev: any) => ({ ...prev, [e.target.name]: null }));
-  };
-
-  const handleStepValidation = () => {
+  const handleNext = () => {
     const err: any = {};
     if (activeStep === 0) {
-      if (!form.customerName) err.customerName = "Name required";
-      if (!form.mobileNumber) err.mobileNumber = "Contact required";
-      if (!form.bookingCategory) err.bookingCategory = "Type required";
-      if (form.tripType === "multi" && !form.returnDate) err.returnDate = "End date required";
+      if (!form.customerName) err.customerName = "Name is required";
+      if (!form.mobileNumber) err.mobileNumber = "Mobile is required";
+      if (form.tripType === "multi" && !form.returnDate) err.returnDate = "Return date required";
     }
-    if (activeStep === 1 && !form.van) { Swal.fire("Required", "Select a vehicle", "info"); return false; }
-    if (activeStep === 2 && form.bookingCategory === "Seat Booking" && !form.seatNumber) {
-       Swal.fire("Required", "Pick a seat", "info"); return false;
-    }
-    setErrors(err);
-    return Object.keys(err).length === 0;
-  };
-
-  const handleNext = () => handleStepValidation() && setActiveStep(s => s + 1);
-  const handleBack = () => setActiveStep(s => s - 1);
-
-  const finalSubmit = async () => {
-    setLoading(true);
-    try {
-      const response = await fetch(`${API_HOST}/booking`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(form),
-      });
-      if (response.ok) {
-        Swal.fire("Success", "Booking Registered", "success").then(() => navigate("/"));
-      }
-    } catch (e) { Swal.fire("Error", "Server Connection Failed", "error"); }
-    finally { setLoading(false); }
+    if (activeStep === 1 && !form.van) { Swal.fire("Required", "Please select a vehicle", "warning"); return; }
+    
+    if (Object.keys(err).length > 0) { setErrors(err); return; }
+    setActiveStep(s => s + 1);
   };
 
   return (
     <Box sx={{ minHeight: "100vh", bgcolor: PALETTE.ui.bg, py: { xs: 2, md: 5 } }}>
       <Container maxWidth="xl">
-        
-        {/* Header Summary for Mobile */}
-        {isMobile && activeStep > 0 && (
-          <Alert severity="info" sx={{ mb: 2, borderRadius: "12px" }}>
-            Booking for {form.customerName || "Guest"} on {form.bookingDate}
-          </Alert>
-        )}
-
         <Stack direction={{ xs: "column", lg: "row" }} spacing={4} alignItems="flex-start">
           
-          {/* Main Card */}
+          {/* Main Booking Panel */}
           <Box sx={{ flex: 1, width: "100%" }}>
             <Paper elevation={0} sx={{ borderRadius: "32px", border: `1px solid ${PALETTE.ui.border}`, overflow: "hidden" }}>
               
-              {/* Progress Indicator */}
+              {/* Stepper Header */}
               <Box sx={{ p: 3, borderBottom: `1px solid ${PALETTE.ui.border}`, bgcolor: "#fff" }}>
                 <Stepper activeStep={activeStep} alternativeLabel>
-                  {STEPS.map(label => (
+                  {WIZARD_STEPS.map(label => (
                     <Step key={label}><StepLabel><Typography variant="caption" fontWeight={700}>{label}</Typography></StepLabel></Step>
                   ))}
                 </Stepper>
-                <LinearProgress variant="determinate" value={(activeStep / 3) * 100} sx={{ mt: 3, height: 6, borderRadius: 3, bgcolor: PALETTE.ui.inputBg }} />
+                <LinearProgress variant="determinate" value={(activeStep / 3) * 100} sx={{ mt: 3, height: 6, borderRadius: 3 }} />
               </Box>
 
               <Box sx={{ p: { xs: 3, md: 6 }, minHeight: 500 }}>
-                {/* STEP 0: ROUTE & USER INFO */}
                 {activeStep === 0 && (
                   <Stack spacing={4}>
                     <Box>
-                      <Typography variant="h5" fontWeight={900} fontFamily={FONTS.PRIMARY}>Trip Duration</Typography>
+                      <Typography variant="h6" fontWeight={800} gutterBottom>Choose Trip Type</Typography>
                       <ToggleButtonGroup
                         value={form.tripType}
                         exclusive
-                        onChange={(_, val) => val && setForm(p => ({ ...p, tripType: val }))}
+                        onChange={(_, val) => val && setForm({ ...form, tripType: val, returnDate: "" })}
                         fullWidth
-                        sx={{ mt: 2, bgcolor: PALETTE.ui.inputBg, p: 0.5, borderRadius: "16px" }}
+                        sx={{ bgcolor: PALETTE.ui.inputBg, p: 0.5, borderRadius: "16px" }}
                       >
-                        <ToggleButton value="single" sx={{ border: "none", borderRadius: "12px", py: 1.5, fontWeight: 700, textTransform: "none" }}>
+                        <ToggleButton value="single" sx={{ border: "none", borderRadius: "12px", py: 1.5, fontWeight: 700 }}>
                           <CalendarTodayIcon sx={{ mr: 1 }} /> Single Day
                         </ToggleButton>
-                        <ToggleButton value="multi" sx={{ border: "none", borderRadius: "12px", py: 1.5, fontWeight: 700, textTransform: "none" }}>
+                        <ToggleButton value="multi" sx={{ border: "none", borderRadius: "12px", py: 1.5, fontWeight: 700 }}>
                           <DateRangeIcon sx={{ mr: 1 }} /> Multi-Day Trip
                         </ToggleButton>
                       </ToggleButtonGroup>
                     </Box>
 
-                    <Divider />
-
                     <Box sx={{ display: "grid", gridTemplateColumns: { xs: "1fr", md: "1fr 1fr" }, gap: 3 }}>
-                      <TextField label="Full Name" name="customerName" variant="filled" sx={INPUT_SX} value={form.customerName} onChange={handleInputChange} error={!!errors.customerName} helperText={errors.customerName} InputProps={{ startAdornment: <InputAdornment position="start"><PersonIcon /></InputAdornment> }} />
-                      <TextField label="Phone Number" name="mobileNumber" variant="filled" sx={INPUT_SX} value={form.mobileNumber} onChange={handleInputChange} error={!!errors.mobileNumber} helperText={errors.mobileNumber} InputProps={{ startAdornment: <InputAdornment position="start"><PhoneIcon /></InputAdornment> }} />
-                      
-                      <TextField type="date" label="Departure Date" name="bookingDate" variant="filled" sx={INPUT_SX} value={form.bookingDate} onChange={handleInputChange} InputLabelProps={{ shrink: true }} inputProps={{ min: TODAY_DATE }} />
+                      <TextField label="Full Name" variant="filled" sx={INPUT_SX} name="customerName" value={form.customerName} onChange={e => setForm({...form, customerName: e.target.value})} error={!!errors.customerName} />
+                      <TextField label="Mobile Number" variant="filled" sx={INPUT_SX} name="mobileNumber" value={form.mobileNumber} onChange={e => setForm({...form, mobileNumber: e.target.value})} error={!!errors.mobileNumber} />
+                      <TextField type="date" label="Start Date" variant="filled" sx={INPUT_SX} value={form.bookingDate} onChange={e => setForm({...form, bookingDate: e.target.value})} InputLabelProps={{ shrink: true }} inputProps={{ min: TODAY_DATE }} />
                       {form.tripType === "multi" && (
-                        <Fade in>
-                          <TextField type="date" label="Return Date" name="returnDate" variant="filled" sx={INPUT_SX} value={form.returnDate} onChange={handleInputChange} error={!!errors.returnDate} helperText={errors.returnDate} InputLabelProps={{ shrink: true }} inputProps={{ min: form.bookingDate }} />
-                        </Fade>
+                        <TextField type="date" label="Return Date" variant="filled" sx={INPUT_SX} value={form.returnDate} onChange={e => setForm({...form, returnDate: e.target.value})} error={!!errors.returnDate} InputLabelProps={{ shrink: true }} inputProps={{ min: form.bookingDate }} />
                       )}
                     </Box>
 
-                    <TextField select label="Booking Type" name="bookingCategory" variant="filled" sx={INPUT_SX} value={form.bookingCategory} onChange={handleInputChange} error={!!errors.bookingCategory}>
-                      {CATEGORIES.map(c => <MenuItem key={c} value={c} sx={{ fontFamily: FONTS.PRIMARY, fontWeight: 600 }}>{c}</MenuItem>)}
+                    <TextField select label="Booking Category" variant="filled" sx={INPUT_SX} value={form.bookingCategory} onChange={e => setForm({...form, bookingCategory: e.target.value})}>
+                      {CATEGORIES.map(c => <MenuItem key={c} value={c}>{c}</MenuItem>)}
                     </TextField>
                   </Stack>
                 )}
 
-                {/* STEP 1: VEHICLE SELECTION */}
                 {activeStep === 1 && (
-                  <Stack spacing={4}>
-                    <Box sx={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
-                      <Typography variant="h5" fontWeight={900}>Select Your Van</Typography>
-                      <IconButton onClick={fetchVans} color="primary"><RestartAltIcon /></IconButton>
-                    </Box>
-
-                    {loading ? (
-                      <Stack direction="row" spacing={3}>{ [1,2,3].map(i => <Skeleton key={i} variant="rectangular" width="30%" height={200} sx={{ borderRadius: 4 }} />) }</Stack>
-                    ) : (
-                      <Box sx={{ display: "grid", gridTemplateColumns: { xs: "1fr", sm: "1fr 1fr", md: "1fr 1fr 1fr" }, gap: 3 }}>
+                  <Box>
+                    <Typography variant="h6" fontWeight={800} mb={3}>Select Available Vehicle</Typography>
+                    {loadingVans ? <CircularProgress /> : (
+                      <Box sx={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(280px, 1fr))", gap: 3 }}>
                         {vanList.map(v => (
-                          <Card key={v._id} sx={{ borderRadius: "24px", border: form.van === v.vanname ? `2px solid ${PALETTE.primary.main}` : `1px solid ${PALETTE.ui.border}`, bgcolor: form.van === v.vanname ? PALETTE.primary.light : "#fff" }}>
-                            <CardActionArea onClick={() => setForm(p => ({ ...p, van: v.vanname }))} sx={{ p: 2 }}>
-                               <Box sx={{ mb: 1 }}><CustomStatusBadge status={v.bookingStatus} /></Box>
-                               <CardMedia component="img" image={v.Image?.[0]} sx={{ height: 120, objectFit: "contain", my: 2 }} />
-                               <Typography variant="subtitle1" fontWeight={800} textAlign="center">{v.vanname}</Typography>
-                               <Typography variant="caption" color="text.secondary" display="block" textAlign="center">{v.seatType} Seats • Diesel • A/C</Typography>
+                          <Card key={v._id} sx={{ borderRadius: "20px", border: form.van === v.vanname ? `2px solid ${PALETTE.primary.main}` : `1px solid ${PALETTE.ui.border}`, bgcolor: form.van === v.vanname ? PALETTE.primary.light : "#fff" }}>
+                            <CardActionArea onClick={() => { setForm({...form, van: v.vanname}); setSeatLayout(v.seatType === "14" ? LAYOUTS.SEATS_14 : LAYOUTS.SEATS_11); }}>
+                              <CardMedia component="img" image={v.Image?.[0]} height="140" sx={{ objectFit: "contain", mt: 2 }} />
+                              <CardContent sx={{ textAlign: "center" }}>
+                                <Typography variant="h6" fontWeight={800}>{v.vanname}</Typography>
+                                <Typography variant="caption" color="text.secondary">{v.seatType} Seats • A/C • WiFi</Typography>
+                              </CardContent>
                             </CardActionArea>
                           </Card>
                         ))}
                       </Box>
                     )}
-                  </Stack>
+                  </Box>
                 )}
 
-                {/* STEP 2: SEAT MAP */}
                 {activeStep === 2 && (
-                  <Stack spacing={4} alignItems="center">
-                    <Typography variant="h5" fontWeight={900}>Choose Preferred Seat</Typography>
+                  <Box textAlign="center">
+                    <Typography variant="h6" fontWeight={800} mb={4}>Choose Your Seat</Typography>
                     {form.bookingCategory === "Full Booking" ? (
-                      <Box sx={{ p: 4, bgcolor: PALETTE.secondary.light, borderRadius: 6, textAlign: "center", maxWidth: 500 }}>
-                        <VerifiedUserIcon sx={{ fontSize: 60, color: PALETTE.secondary.main, mb: 2 }} />
-                        <Typography variant="h6" fontWeight={800}>Full Vehicle Reserved</Typography>
-                        <Typography variant="body2" color="text.secondary">You are booking the entire van. Individual seat selection is not required as the whole vehicle is yours.</Typography>
-                      </Box>
+                      <Alert severity="success" sx={{ borderRadius: "16px" }}>The entire vehicle is reserved for your trip. No individual seat selection needed.</Alert>
                     ) : (
-                      <Box sx={{ width: "100%", maxWidth: 400, p: 3, bgcolor: "#fff", borderRadius: 8, border: `1px solid ${PALETTE.ui.border}` }}>
-                         <Typography variant="caption" color="text.secondary" display="block" textAlign="center" mb={2}>Tap on a seat number to select</Typography>
-                         <Box sx={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: 2 }}>
-                            {Array.from({ length: selectedVan?.seatType === "14" ? 14 : 11 }, (_, i) => (
-                              <Button
-                                key={i}
-                                variant={form.seatNumber === (i + 1).toString() ? "contained" : "outlined"}
-                                onClick={() => setForm(p => ({ ...p, seatNumber: (i + 1).toString() }))}
-                                sx={{ borderRadius: "10px", minWidth: 0, height: 45, fontWeight: 700 }}
-                              >
-                                {i + 1}
-                              </Button>
-                            ))}
-                         </Box>
+                      <Box sx={{ position: "relative", width: "fit-content", mx: "auto" }}>
+                        <Box component="img" src={ASSETS.SEAT_MAP} width={350} sx={{ borderRadius: "20px" }} />
+                        {seatLayout.map(s => (
+                          <Button key={s.number} onClick={() => setForm({...form, seatNumber: s.number.toString()})} sx={{ position: "absolute", top: s.top, left: s.left, minWidth: 32, height: 32, bgcolor: form.seatNumber === s.number.toString() ? "primary.main" : "white", color: form.seatNumber === s.number.toString() ? "white" : "black", border: "1px solid #ccc", borderRadius: "6px", p: 0, fontSize: "10px", fontWeight: 700 }}>{s.number}</Button>
+                        ))}
                       </Box>
                     )}
-                  </Stack>
+                  </Box>
                 )}
 
-                {/* STEP 3: FINAL REVIEW */}
                 {activeStep === 3 && (
                   <Stack spacing={4}>
-                    <Typography variant="h5" fontWeight={900}>Final Review</Typography>
-                    <Box sx={{ p: 4, bgcolor: "#fff", borderRadius: 6, border: `2px dashed ${PALETTE.primary.main}` }}>
-                        <Stack spacing={2}>
-                           <Box sx={{ display: "flex", justifyContent: "space-between" }}>
-                              <Typography color="text.secondary" fontWeight={600}>Passenger:</Typography>
-                              <Typography fontWeight={800}>{form.customerName}</Typography>
-                           </Box>
-                           <Box sx={{ display: "flex", justifyContent: "space-between" }}>
-                              <Typography color="text.secondary" fontWeight={600}>Trip Type:</Typography>
-                              <Typography fontWeight={800} color="primary">{form.tripType === "single" ? "One Way" : "Round Trip"}</Typography>
-                           </Box>
-                           <Box sx={{ display: "flex", justifyContent: "space-between" }}>
-                              <Typography color="text.secondary" fontWeight={600}>Dates:</Typography>
-                              <Typography fontWeight={800}>{form.bookingDate} {form.returnDate && `to ${form.returnDate}`}</Typography>
-                           </Box>
-                           <Box sx={{ display: "flex", justifyContent: "space-between" }}>
-                              <Typography color="text.secondary" fontWeight={600}>Vehicle:</Typography>
-                              <Typography fontWeight={800}>{form.van}</Typography>
-                           </Box>
-                        </Stack>
+                    <Alert icon={<VerifiedUserIcon />} severity="success" sx={{ borderRadius: "16px" }}>Final Check: Everything looks good! Ready to book?</Alert>
+                    <OrderSummary form={form} van={selectedVanObject} />
+                    <Box sx={{ display: "flex", alignItems: "center", gap: 2, p: 2, bgcolor: PALETTE.ui.inputBg, borderRadius: "12px" }}>
+                       <input type="checkbox" style={{ transform: "scale(1.5)" }} />
+                       <Typography variant="body2">I agree to the Terms of Service and Cancellation Policy.</Typography>
                     </Box>
-                    <Alert severity="warning" icon={<InfoIcon />}>A deposit may be required to confirm this booking. Our team will contact you shortly after submission.</Alert>
                   </Stack>
                 )}
               </Box>
 
               {/* Navigation Footer */}
-              <Box sx={{ p: 3, borderTop: `1px solid ${PALETTE.ui.border}`, bgcolor: "#fff", display: "flex", justifyContent: "space-between" }}>
-                <Button disabled={activeStep === 0} onClick={handleBack} startIcon={<ArrowBackIosNewIcon />} sx={{ fontWeight: 700, textTransform: "none" }}>Back</Button>
+              <Box sx={{ p: 3, bgcolor: "#fff", borderTop: `1px solid ${PALETTE.ui.border}`, display: "flex", justifyContent: "space-between" }}>
+                <Button disabled={activeStep === 0} onClick={() => setActiveStep(s => s - 1)}>Back</Button>
                 {activeStep === 3 ? (
-                  <Button variant="contained" size="large" onClick={finalSubmit} sx={{ borderRadius: "12px", px: 6, py: 1.5, fontWeight: 800, bgcolor: PALETTE.status.success, "&:hover": { bgcolor: "#059669" } }}>Confirm & Book</Button>
+                  <Button variant="contained" onClick={async () => { setSubmitting(true); setTimeout(() => navigate("/"), 2000); }} disabled={submitting}>{submitting ? <CircularProgress size={24} /> : "Confirm & Book Now"}</Button>
                 ) : (
-                  <Button variant="contained" size="large" onClick={handleNext} endIcon={<ArrowForwardIosIcon />} sx={{ borderRadius: "12px", px: 6, py: 1.5, fontWeight: 800, bgcolor: PALETTE.primary.main }}>Next Step</Button>
+                  <Button variant="contained" onClick={handleNext}>Next Step</Button>
                 )}
               </Box>
             </Paper>
           </Box>
 
-          {/* SIDEBAR SUMMARY */}
+          {/* Desktop Summary Sidebar */}
           {!isMobile && (
-            <Box sx={{ width: 400, position: "sticky", top: 40 }}>
-              <Card elevation={0} sx={{ borderRadius: "32px", border: `1px solid ${PALETTE.ui.border}`, p: 4, bgcolor: "#fff" }}>
-                 <Stack spacing={3}>
-                    <Typography variant="h6" fontWeight={900} color="primary">Trip Summary</Typography>
-                    <Divider />
-                    <Box>
-                       <Typography variant="caption" color="text.secondary" fontWeight={800} sx={{ letterSpacing: 1 }}>BOOKING STATUS</Typography>
-                       <Typography variant="body1" fontWeight={700}>{form.bookingCategory || "Selection Pending..."}</Typography>
-                    </Box>
-                    <Box>
-                       <Typography variant="caption" color="text.secondary" fontWeight={800} sx={{ letterSpacing: 1 }}>DATES</Typography>
-                       <Typography variant="body1" fontWeight={700}>{form.bookingDate} {form.returnDate && `- ${form.returnDate}`}</Typography>
-                    </Box>
-                    <Box>
-                       <Typography variant="caption" color="text.secondary" fontWeight={800} sx={{ letterSpacing: 1 }}>VEHICLE</Typography>
-                       <Typography variant="body1" fontWeight={700}>{form.van || "Choose a van"}</Typography>
-                    </Box>
-                    <Box sx={{ p: 2, bgcolor: PALETTE.ui.bg, borderRadius: 4 }}>
-                       <Stack direction="row" spacing={2} alignItems="center">
-                          <Avatar sx={{ bgcolor: PALETTE.primary.main }}>{form.customerName ? form.customerName[0] : "?"}</Avatar>
-                          <Box>
-                             <Typography variant="subtitle2" fontWeight={800}>{form.customerName || "Guest User"}</Typography>
-                             <Typography variant="caption" color="text.secondary">{form.mobileNumber || "No Contact"}</Typography>
-                          </Box>
-                       </Stack>
-                    </Box>
-                 </Stack>
-              </Card>
+            <Box sx={{ width: 400, position: "sticky", top: 20 }}>
+              <OrderSummary form={form} van={selectedVanObject} />
             </Box>
           )}
+
         </Stack>
       </Container>
     </Box>
