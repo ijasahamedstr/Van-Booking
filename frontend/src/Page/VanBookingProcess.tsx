@@ -70,7 +70,7 @@ const ImmersiveBookingWorkflow = () => {
       color: THEME_COLOR,
       py: 4,
       pt: 12,
-      pb: 1+2,
+      pb: 12,
     }}>
       <Container maxWidth="md">
         <Stack direction={{ xs: "column", md: "row" }} spacing={6} alignItems="center">
