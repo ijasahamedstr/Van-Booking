@@ -1,236 +1,220 @@
-import { useState } from "react";
+import * as React from 'react';
+import { useNavigate, useLocation } from 'react-router-dom';
 import {
   AppBar,
+  Box,
   Toolbar,
   IconButton,
-  Box,
-  useTheme,
-  useMediaQuery,
+  Typography,
+  Container,
+  Button,
   Drawer,
   List,
-  ListItem,
   ListItemButton,
+  ListItemIcon,
   ListItemText,
-  Divider,
-} from "@mui/material";
-import MenuIcon from "@mui/icons-material/Menu";
-import WhatsAppIcon from "@mui/icons-material/WhatsApp";
-import { useNavigate } from "react-router-dom";
+} from '@mui/material';
+import { styled } from '@mui/material/styles';
+import useMediaQuery from '@mui/material/useMediaQuery';
 
-/* ---------------- FONT ---------------- */
+// Icons
+import MenuIcon from '@mui/icons-material/Menu';
+import CloseIcon from '@mui/icons-material/Close';
+import PersonOutlineIcon from '@mui/icons-material/PersonOutline';
+import MapsUgcIcon from '@mui/icons-material/MapsUgc';
+import FeedbackIcon from '@mui/icons-material/Feedback';
+import HomeIcon from '@mui/icons-material/Home';
+import LocalShippingIcon from '@mui/icons-material/LocalShipping';
+import BookOnlineIcon from '@mui/icons-material/BookOnline';
+import StarIcon from '@mui/icons-material/Star';
 
-const MONTSERRAT = '"Montserrat", sans-serif';
+/* --- Data Structure with Sentence Case --- */
+const navLinks = [
+  { label: 'Home', path: '/', icon: <HomeIcon /> },
+  { label: 'Van details', path: '/van-details', icon: <LocalShippingIcon /> },
+  { label: 'Van booking', path: '/van-booking', icon: <BookOnlineIcon /> },
+  { label: 'Special request', path: '/special-request', icon: <StarIcon /> },
+];
 
-/* ---------------- ICON IMAGES ---------------- */
+/* --- Styled Components --- */
+const StyledToolbar = styled(Toolbar, {
+  shouldForwardProp: (prop) => prop !== 'isScrolled',
+})<{ isScrolled?: boolean }>(({ theme, isScrolled }) => ({
+  backgroundColor: isScrolled ? 'rgba(17, 17, 17, 0.98)' : 'rgba(17, 17, 17, 0.4)',
+  borderRadius: '60px',
+  marginTop: isScrolled ? '10px' : '25px',
+  padding: '10px 15px 10px 25px !important',
+  color: 'white',
+  boxShadow: isScrolled ? '0px 20px 50px rgba(0,0,0,0.5)' : 'none',
+  backdropFilter: 'blur(18px)',
+  border: '1px solid rgba(255,255,255,0.15)',
+  transition: 'all 0.5s cubic-bezier(0.4, 0, 0.2, 1)',
+  [theme.breakpoints.down('lg')]: { borderRadius: '40px', marginTop: '10px' },
+  [theme.breakpoints.down('sm')]: { borderRadius: '25px', marginTop: '8px' }
+}));
 
-const ICONS = {
-  vanDetails: "https://cdn-icons-png.flaticon.com/512/3774/3774278.png",
-  vanBooking: "https://cdn-icons-png.flaticon.com/512/747/747310.png",
-  specialRequest: "https://cdn-icons-png.flaticon.com/512/1828/1828817.png",
-};
+const NavButton = styled(Button, {
+  shouldForwardProp: (prop) => prop !== 'active',
+})<{ active?: boolean }>(({ active }) => ({
+  color: active ? '#4caf50' : '#ffffff',
+  textTransform: 'none', // Preserves "Van details" casing
+  fontSize: '0.9rem',
+  fontWeight: 600,
+  margin: '0 5px',
+  fontFamily: '"Montserrat", sans-serif',
+  display: 'flex',
+  alignItems: 'center',
+  gap: '8px',
+  position: 'relative',
+  '& .MuiSvgIcon-root': { fontSize: '1.2rem' },
+  '&::after': {
+    content: '""',
+    position: 'absolute',
+    bottom: 5,
+    left: '50%',
+    width: active ? '60%' : 0,
+    height: '2px',
+    backgroundColor: '#4caf50',
+    transition: 'all 0.3s ease',
+    transform: 'translateX(-50%)',
+  },
+  '&:hover': { color: '#4caf50', backgroundColor: 'transparent' },
+  '&:hover::after': { width: '60%' }
+}));
 
-/* ---------------- MAIN COMPONENT ---------------- */
+const ActionButton = styled(Button)(() => ({
+  borderRadius: '50px',
+  textTransform: 'none', // Preserves "Complaint" casing
+  fontSize: '0.85rem',
+  fontWeight: 700,
+  fontFamily: '"Montserrat", sans-serif',
+  display: 'flex',
+  alignItems: 'center',
+  padding: '8px 20px',
+  height: '46px',
+}));
 
-export default function EtsyStyleHeader() {
-  const theme = useTheme();
-  const isMobile = useMediaQuery(theme.breakpoints.down("md"));
+const ComplaintButton = styled(ActionButton)(() => ({
+  backgroundColor: '#f44336',
+  color: '#fff',
+  marginRight: '12px',
+  boxShadow: '0 4px 15px rgba(244, 67, 54, 0.3)',
+  '&:hover': { backgroundColor: '#d32f2f' },
+  '& .icon-wrap': { marginLeft: '8px', display: 'flex', alignItems: 'center' }
+}));
+
+const LoginButton = styled(ActionButton)(() => ({
+  color: '#fff',
+  backgroundColor: 'rgba(255, 255, 255, 0.08)',
+  border: '1px solid rgba(255, 255, 255, 0.2)',
+  '&:hover': { backgroundColor: 'rgba(255, 255, 255, 0.15)', borderColor: '#4caf50' },
+  '& .login-icon': { marginRight: '8px', color: '#4caf50', fontSize: '1.3rem' }
+}));
+
+export default function Navbar() {
+  const [isScrolled, setIsScrolled] = React.useState(false);
+  const [drawerOpen, setDrawerOpen] = React.useState(false);
   const navigate = useNavigate();
+  const location = useLocation();
+  const isDesktop = useMediaQuery('(min-width:1200px)');
 
-  const [drawerOpen, setDrawerOpen] = useState(false);
-
-  const logoUrl =
-    "https://i.ibb.co/HppxBxgP/Gemini-Generated-Image-f3bp5nf3bp5nf3bp.png";
-
-  /* ---------------- HANDLERS ---------------- */
+  React.useEffect(() => {
+    const handleScroll = () => setIsScrolled(window.scrollY > 50);
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
 
   const handleNavigate = (path: string) => {
     navigate(path);
     setDrawerOpen(false);
   };
 
-  const handleLogoClick = () => {
-    navigate("/");
-    setDrawerOpen(false);
-  };
-
-  const IconImg = ({ src, bgColor }: { src: string; bgColor?: string }) => (
-    <Box
-      sx={{
-        width: 42,
-        height: 42,
-        borderRadius: "50%",
-        backgroundColor: bgColor || "transparent",
-        display: "flex",
-        alignItems: "center",
-        justifyContent: "center",
-        mr: 2,
-      }}
-    >
-      <Box component="img" src={src} sx={{ width: 24, height: 24 }} />
-    </Box>
-  );
-
-  const headerBg = isMobile ? "#fbfbfb" : "#fbfbfb";
-  const drawerBg = isMobile ? "#fbfbfb" : "#fbfbfb";
-
   return (
-    <>
-      {/* ================= HEADER ================= */}
-      <AppBar
-        position="static"
-        elevation={0}
-        sx={{
-          backgroundColor: headerBg,
-          color: "#000",
-          px: { xs: 3, sm: 6, md: 10 },
-          mt: "55px",
-          fontFamily: MONTSERRAT,
-        }}
-      >
-        <Toolbar
-          disableGutters
-          sx={{
-            minHeight: { xs: 110, sm: 130, md: 150 },
-            justifyContent: "space-between",
-            alignItems: "center",
-            fontFamily: MONTSERRAT,
-          }}
-        >
-          {/* LOGO */}
-          <Box
-            onClick={handleLogoClick}
-            sx={{
-              width: { xs: 240, sm: 320, md: 450 },
-              height: { xs: 90, sm: 10, md: 130 },
-              display: "flex",
-              alignItems: "center",
-              cursor: "pointer",
-            }}
-          >
-            <Box
-              component="img"
-              src={logoUrl}
-              alt="Logo"
-              sx={{
-                height: "100%",
-                objectFit: "contain",
-              }}
-            />
-          </Box>
+    <React.Fragment>
+      <AppBar position="fixed" sx={{ backgroundColor: 'transparent', boxShadow: 'none', zIndex: 1500 }}>
+        <Container maxWidth="xl">
+          <StyledToolbar isScrolled={isScrolled}>
+            {/* LOGO */}
+            <Box onClick={() => handleNavigate('/')} sx={{ cursor: 'pointer', display: 'flex', alignItems: 'center' }}>
+              <Box component="img" src="https://i.ibb.co/XZvpGxxs/Gemini-Generated-Image-ighevnighevnighe-1.png" alt="Logo"
+                sx={{ height: { xs: '38px', md: '55px' }, transition: '0.3s ease' }}
+              />
+            </Box>
 
-          {/* MENU ICON */}
-          <IconButton onClick={() => setDrawerOpen(true)}>
-            <MenuIcon fontSize="large" />
-          </IconButton>
-        </Toolbar>
+            {isDesktop ? (
+              <Box sx={{ display: 'flex', alignItems: 'center', flexGrow: 1, justifyContent: 'flex-end' }}>
+                {navLinks.map((link) => (
+                  <NavButton 
+                    key={link.label} 
+                    onClick={() => handleNavigate(link.path)}
+                    active={location.pathname === link.path}
+                  >
+                    {link.icon}
+                    {link.label}
+                  </NavButton>
+                ))}
+
+                <Box sx={{ display: 'flex', ml: 3 }}>
+                  <ComplaintButton onClick={() => handleNavigate('/complaint')}>
+                    Complaint <div className="icon-wrap"><MapsUgcIcon sx={{ fontSize: '1.1rem' }} /></div>
+                  </ComplaintButton>
+                  
+                  <LoginButton onClick={() => handleNavigate('/login')}>
+                    <PersonOutlineIcon className="login-icon" /> Login
+                  </LoginButton>
+                </Box>
+              </Box>
+            ) : (
+              <Box sx={{ ml: 'auto', display: 'flex', alignItems: 'center', gap: 1.5 }}>
+                <IconButton onClick={() => handleNavigate('/login')} sx={{ color: 'white' }}><PersonOutlineIcon /></IconButton>
+                <IconButton onClick={() => setDrawerOpen(true)} sx={{ color: 'white', bgcolor: 'rgba(255,255,255,0.1)', borderRadius: '12px' }}><MenuIcon /></IconButton>
+              </Box>
+            )}
+          </StyledToolbar>
+        </Container>
       </AppBar>
 
-      {/* ================= DRAWER ================= */}
-      <Drawer
-        anchor="left"
-        open={drawerOpen}
-        onClose={() => setDrawerOpen(false)}
-        PaperProps={{
-          sx: {
-            backgroundColor: drawerBg,
-            fontFamily: MONTSERRAT,
-          },
-        }}
-      >
-        <Box sx={{ width: 300, py: 3, fontFamily: MONTSERRAT }}>
-          {/* DRAWER LOGO */}
-          <Box
-            onClick={handleLogoClick}
-            sx={{
-              width: 320,
-              height: 140,
-              mx: "auto",
-              mb: 3,
-              cursor: "pointer",
-            }}
-          >
-            <Box
-              component="img"
-              src={logoUrl}
-              alt="Logo"
-              sx={{
-                width: "100%",
-                height: "100%",
-                objectFit: "contain",
-              }}
-            />
-          </Box>
+      {/* MOBILE DRAWER */}
+      <Drawer anchor="right" open={drawerOpen} onClose={() => setDrawerOpen(false)} 
+        PaperProps={{ sx: { width: { xs: '85%', sm: '350px' }, bgcolor: '#0a0a0a', color: '#fff' } }}>
+        
+        <Box sx={{ p: 3, display: 'flex', justifyContent: 'space-between', alignItems: 'center', borderBottom: '1px solid #222' }}>
+          <Typography variant="h6" sx={{ fontFamily: 'Montserrat', fontWeight: 700 }}>Menu</Typography>
+          <IconButton onClick={() => setDrawerOpen(false)} sx={{ color: 'white' }}><CloseIcon /></IconButton>
+        </Box>
 
-          <Divider />
-
-          {/* MENU ITEMS */}
+        <Box sx={{ p: 3 }}>
           <List>
-            <ListItem disablePadding>
-              <ListItemButton onClick={() => handleNavigate("/van-details")}>
-                <IconImg src={ICONS.vanDetails} />
-                <ListItemText
-                  primary="Van Details"
-                  primaryTypographyProps={{
-                    fontSize: 17,
-                    fontWeight: 500,
-                    fontFamily: MONTSERRAT,
-                  }}
+            {navLinks.map((link) => (
+              <ListItemButton 
+                key={link.label} 
+                onClick={() => handleNavigate(link.path)} 
+                sx={{ py: 1.5, borderRadius: '12px', mb: 1, backgroundColor: location.pathname === link.path ? 'rgba(76, 175, 80, 0.1)' : 'transparent' }}
+              >
+                <ListItemIcon sx={{ color: location.pathname === link.path ? '#4caf50' : 'white', minWidth: '40px' }}>
+                  {link.icon}
+                </ListItemIcon>
+                <ListItemText 
+                  primary={link.label} 
+                  primaryTypographyProps={{ 
+                    fontWeight: 600, 
+                    fontFamily: 'Montserrat',
+                    color: location.pathname === link.path ? '#4caf50' : 'white'
+                  }} 
                 />
               </ListItemButton>
-            </ListItem>
-
-            <ListItem disablePadding>
-              <ListItemButton onClick={() => handleNavigate("/van-booking")}>
-                <IconImg src={ICONS.vanBooking} bgColor="#E3F2FD" />
-                <ListItemText
-                  primary="Van Booking"
-                  primaryTypographyProps={{
-                    fontSize: 17,
-                    fontWeight: 500,
-                    fontFamily: MONTSERRAT,
-                  }}
-                />
-              </ListItemButton>
-            </ListItem>
-
-            <ListItem disablePadding>
-              <ListItemButton onClick={() => handleNavigate("/special-request")}>
-                <IconImg src={ICONS.specialRequest} />
-                <ListItemText
-                  primary="Special Request"
-                  primaryTypographyProps={{
-                    fontSize: 17,
-                    fontWeight: 500,
-                    fontFamily: MONTSERRAT,
-                  }}
-                />
-              </ListItemButton>
-            </ListItem>
+            ))}
           </List>
 
-          <Divider />
-
-          {/* WHATSAPP */}
-          <Box
-            sx={{
-              px: 2,
-              py: 2,
-              display: "flex",
-              alignItems: "center",
-              gap: 1,
-              color: "#25D366",
-              fontSize: 15,
-              fontWeight: 500,
-              fontFamily: MONTSERRAT,
-              cursor: "pointer",
-            }}
-            onClick={() => window.open("https://wa.me/966XXXXXXXXX", "_blank")}
-          >
-            <WhatsAppIcon />
-            Easy & Fast Van Booking
+          <Box sx={{ mt: 4 }}>
+            <Button fullWidth variant="contained" onClick={() => handleNavigate('/complaint')}
+              startIcon={<FeedbackIcon />}
+              sx={{ bgcolor: '#f44336', py: 1.5, borderRadius: '12px', fontWeight: 700, textTransform: 'none', '&:hover': { bgcolor: '#d32f2f' } }}>
+              File a complaint
+            </Button>
           </Box>
         </Box>
       </Drawer>
-    </>
+    </React.Fragment>
   );
 }

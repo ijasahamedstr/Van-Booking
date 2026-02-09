@@ -1,46 +1,26 @@
- import React from "react";
-import {
-  Box,
-  Typography,
-  Card,
-  CardActionArea,
-  Container,
-} from "@mui/material";
+import React from "react";
+import { Box, Typography, Card, CardActionArea, Container } from "@mui/material";
 import { keyframes } from "@mui/system";
 import { Link } from "react-router-dom";
 
-/* ---------------- FONT ---------------- */
-const TAJAWAL = '"Montserrat", sans-serif';
+/* ---------------- FONT & COLORS ---------------- */
+const FONT_FAMILY = '"Inter", "Montserrat", sans-serif';
+const TEXT_PRIMARY = "#f8fafc";
 
 /* ---------------- IMAGE URLS ---------------- */
-const VAN_IMAGE_URL =
-  "https://i.ibb.co/Wv2z7Jd0/Gemini-Generated-Image-1ltd7r1ltd7r1ltd-removebg-preview.png";
-const CALENDAR_IMAGE_URL =
-  "https://i.ibb.co/hxChYFH9/istockphoto-1742244777-612x612-removebg-preview.png";
-const SPECIAL_REQUEST_IMAGE_URL =
-  "https://i.ibb.co/zTcsZfQg/Gemini-Generated-Image-an9h0uan9h0uan9h-removebg-preview.png";
+const VAN_IMAGE_URL = "https://i.ibb.co/Wv2z7Jd0/Gemini-Generated-Image-1ltd7r1ltd7r1ltd-removebg-preview.png";
+const CALENDAR_IMAGE_URL = "https://i.ibb.co/hxChYFH9/istockphoto-1742244777-612x612-removebg-preview.png";
+const SPECIAL_REQUEST_IMAGE_URL = "https://i.ibb.co/zTcsZfQg/Gemini-Generated-Image-an9h0uan9h0uan9h-removebg-preview.png";
 
 /* ---------------- ANIMATIONS ---------------- */
-const tap = keyframes`
-  0% { transform: scale(1); }
-  100% { transform: scale(.96); }
-`;
-
 const float = keyframes`
-  0% { transform: translate(-50%, 0); }
-  50% { transform: translate(-50%, -18px); }
-  100% { transform: translate(-50%, 0); }
+  0%, 100% { transform: translate(-50%, 0) scale(1); }
+  50% { transform: translate(-50%, -15px) scale(1.05); }
 `;
 
-const bubbleFloat = keyframes`
-  0% {
-    transform: translateY(0) scale(1);
-    opacity: .45;
-  }
-  100% {
-    transform: translateY(-120px) scale(1.4);
-    opacity: 0;
-  }
+const shimmer = keyframes`
+  0% { transform: translateX(-100%) skewX(-15deg); }
+  100% { transform: translateX(200%) skewX(-15deg); }
 `;
 
 /* ---------------- CARD ITEM ---------------- */
@@ -48,117 +28,142 @@ type ServiceCardProps = {
   title: string;
   subtitle: string;
   image: string;
-  gradient: string;
+  accentColor: string;
   link: string;
+  index: string;
 };
 
-const ServiceCard = ({
-  title,
-  subtitle,
-  image,
-  gradient,
-  link,
-}: ServiceCardProps) => {
+const ServiceCard = ({ title, subtitle, image, accentColor, link, index }: ServiceCardProps) => {
   return (
-    <Box sx={{ position: "relative", pt: 14 }}>
-      {/* FLOATING IMAGE (OUTSIDE CARD – OK) */}
+    <Box sx={{ position: "relative", pt: 12, pb: 2 }}>
+      {/* 🚀 FLOATING IMAGE - Larger & Sharper */}
       <Box
         component="img"
         src={image}
         alt={title}
         sx={{
-          width: 230,
+          width: 240,
           position: "absolute",
-          top: 0,
+          top: -20,
           left: "50%",
           transform: "translateX(-50%)",
-          animation: `${float} 4s ease-in-out infinite`,
-          filter: "drop-shadow(0 35px 55px rgba(0,0,0,.55))",
-          zIndex: 3,
+          animation: `${float} 5s ease-in-out infinite`,
+          filter: `drop-shadow(0 20px 40px ${accentColor}66)`,
+          zIndex: 10,
           pointerEvents: "none",
         }}
       />
 
-      {/* CARD */}
       <Card
         sx={{
-          borderRadius: 6,
+          borderRadius: "32px",
+          background: "rgba(15, 23, 42, 0.8)", // Dark Slate
+          backdropFilter: "blur(12px)",
+          border: `1px solid rgba(255,255,255,0.1)`,
           position: "relative",
-          overflow: "hidden", // 🔒 CLIP EVERYTHING
-          background: gradient,
-          color: "#fff",
-          boxShadow: "0 30px 70px rgba(0,0,0,.35)",
-          transition: "transform .45s ease, box-shadow .45s ease",
-          fontFamily: TAJAWAL,
-
+          overflow: "hidden",
+          transition: "all 0.5s cubic-bezier(0.23, 1, 0.32, 1)",
           "&:hover": {
-            transform: "translateY(-14px)",
-            boxShadow: "0 45px 95px rgba(0,0,0,.45)",
+            transform: "translateY(-10px) rotateX(4deg) rotateY(-2deg)",
+            boxShadow: `0 30px 60px -12px ${accentColor}44`,
+            border: `1px solid ${accentColor}aa`,
           },
-
-          "&:hover .bubble": {
-            opacity: 1,
+          "&:hover .shimmer": {
+            animation: `${shimmer} 2.5s infinite`,
           },
         }}
       >
-        {/* 🔵 BUBBLE LAYER (INSIDE CARD ONLY) */}
+        {/* SHIMMER EFFECT ON HOVER */}
         <Box
+          className="shimmer"
           sx={{
             position: "absolute",
-            inset: 0,
-            overflow: "hidden",
-            pointerEvents: "none",
+            top: 0,
+            left: 0,
+            width: "50%",
+            height: "100%",
+            background: `linear-gradient(90deg, transparent, ${accentColor}22, transparent)`,
             zIndex: 1,
+            pointerEvents: "none",
+          }}
+        />
+
+        {/* HOLOGRAPHIC BACKGROUND NUMBER */}
+        <Typography
+          sx={{
+            position: "absolute",
+            right: -10,
+            bottom: -20,
+            fontSize: "120px",
+            fontWeight: 900,
+            color: "rgba(255,255,255,0.03)",
+            lineHeight: 1,
+            zIndex: 0,
+            pointerEvents: "none",
+            fontFamily: FONT_FAMILY,
           }}
         >
-          {[...Array(12)].map((_, i) => (
-            <Box
-              key={i}
-              className="bubble"
-              sx={{
-                position: "absolute",
-                bottom: -30,
-                left: `${Math.random() * 100}%`,
-                width: `${6 + Math.random() * 14}px`,
-                height: `${6 + Math.random() * 14}px`,
-                borderRadius: "50%",
-                background: "rgba(255,255,255,.35)",
-                animation: `${bubbleFloat} linear infinite`,
-                animationDuration: `${6 + Math.random() * 6}s`,
-                animationDelay: `${Math.random() * 4}s`,
-                opacity: 0,
-              }}
-            />
-          ))}
-        </Box>
+          {index}
+        </Typography>
 
-        {/* CONTENT */}
         <CardActionArea
           component={Link}
           to={link}
           sx={{
-            position: "relative",
-            zIndex: 2, // ⬆ ABOVE BUBBLES
-            pt: 10,
-            pb: 4,
-            px: 3,
+            pt: 12,
+            pb: 5,
+            px: 4,
             textAlign: "center",
-            color: "inherit",
-            textDecoration: "none",
-            "&:active": {
-              animation: `${tap} .12s ease-in-out`,
-            },
+            zIndex: 2,
           }}
         >
-          <Typography sx={{ fontWeight: 800, fontSize: 19,fontFamily:TAJAWAL }}>
+          {/* TAGLINE DECOR */}
+          <Box
+            sx={{
+              display: "inline-block",
+              px: 1.5,
+              py: 0.5,
+              borderRadius: "50px",
+              bgcolor: `${accentColor}22`,
+              border: `1px solid ${accentColor}44`,
+              mb: 2,
+            }}
+          >
+            <Typography sx={{ fontSize: "10px", fontWeight: 700, color: accentColor, letterSpacing: 1 ,fontFamily: FONT_FAMILY }}>
+              PREMIUM SERVICE
+            </Typography>
+          </Box>
+
+          <Typography sx={{ fontWeight: 700, fontSize: "1.3rem", color: TEXT_PRIMARY, fontFamily: FONT_FAMILY, mb: 1 }}>
             {title}
           </Typography>
 
-          <Typography sx={{ fontSize: 14, opacity: 0.9, mt: 0.8,fontFamily:TAJAWAL }}>
+          <Typography sx={{ fontSize: "0.85rem", color: "rgba(255,255,255,0.6)", fontFamily: FONT_FAMILY, lineHeight: 1.6 }}>
             {subtitle}
           </Typography>
 
-          <Typography sx={{ fontSize: 28, mt: 1.4, fontFamily:TAJAWAL }}>→</Typography>
+          {/* ARROW BUTTON DESIGN */}
+          <Box
+            sx={{
+              mt: 3,
+              width: 45,
+              height: 45,
+              borderRadius: "50%",
+              border: `1px solid ${accentColor}44`,
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              margin: "24px auto 0",
+              transition: "0.3s",
+              color: accentColor,
+              "&:hover": {
+                bgcolor: accentColor,
+                color: "#fff",
+              },
+            }}
+          >
+            →
+          </Box>
         </CardActionArea>
       </Card>
     </Box>
@@ -168,39 +173,48 @@ const ServiceCard = ({
 /* ---------------- MAIN LIST ---------------- */
 const ServiceCards: React.FC = () => {
   return (
-    <Box sx={{ py: 9 }}>
+    <Box sx={{ py: 15, bgcolor: "#020617" }}>
       <Container maxWidth="lg">
+        {/* SECTION HEADER */}
+        <Box sx={{ textAlign: "center", mb: 10 }}>
+          <Typography sx={{ color: "#6366f1", fontWeight: 700, letterSpacing: 2, fontSize: "0.8rem", mb: 2 ,fontFamily: FONT_FAMILY }}>
+            EXCLUSIVE CONCIERGE
+          </Typography>
+          <Typography variant="h4" sx={{ color: "#fff", fontWeight: 800, fontFamily: FONT_FAMILY }}>
+            Our Elite Services
+          </Typography>
+        </Box>
+
         <Box
           sx={{
             display: "grid",
-            gridTemplateColumns: {
-              xs: "1fr",
-              sm: "repeat(2, 1fr)",
-              md: "repeat(3, 1fr)",
-            },
-            gap: 7,
+            gridTemplateColumns: { xs: "1fr", sm: "repeat(2, 1fr)", md: "repeat(3, 1fr)" },
+            gap: 5,
           }}
         >
           <ServiceCard
+            index="01"
             title="VAN DETAILS"
-            subtitle="Choose the van type and seating"
-            gradient="linear-gradient(135deg, #023B4E, #046b82)"
+            subtitle="Explore our luxury fleet and personalized seating arrangements."
+            accentColor="#38bdf8" // Sky Blue
             image={VAN_IMAGE_URL}
             link="/van-details"
           />
 
           <ServiceCard
-            title="VAN BOOKING"
-            subtitle="Select location and date"
-            gradient="linear-gradient(135deg, #0f766e, #06f9f3)"
+            index="02"
+            title="INSTANT BOOKING"
+            subtitle="Precision scheduling with real-time location tracking."
+            accentColor="#2dd4bf" // Teal
             image={CALENDAR_IMAGE_URL}
             link="/van-booking"
           />
 
           <ServiceCard
-            title="SPECIAL REQUEST"
-            subtitle="Add additional notes"
-            gradient="linear-gradient(135deg, #7c3aed, #c084fc)"
+            index="03"
+            title="ELITE REQUEST"
+            subtitle="Dedicated support for custom routes and special requirements."
+            accentColor="#a855f7" // Purple
             image={SPECIAL_REQUEST_IMAGE_URL}
             link="/special-request"
           />

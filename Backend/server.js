@@ -24,8 +24,7 @@ app.use(express.urlencoded({ extended: true }));
 app.use(
   cors({
     origin: [
-      "http://localhost:5173",
-      "http://localhost:8001",
+      "https://van-booking-rho.vercel.app"
     ],
     methods: ["GET", "POST", "PUT", "DELETE"],
     credentials: true,
@@ -51,7 +50,7 @@ app.use('/Adminregister',AccountAdminrouter);
 app.use('/Slidersection',Slidersection);
 app.use('/inquiry',Inquirysection);
 app.use('/Request',Requestrouter);
-app.use("/booking",Bookingrouter);
+app.use("/api",Bookingrouter);
 app.use("/Vanaddinfo", Vanaddsection);
 
 // Start server
