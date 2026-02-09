@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { Box, Typography, Container, Stack, alpha } from "@mui/material";
 import { keyframes } from "@emotion/react";
 // Material UI Icons
@@ -70,7 +70,7 @@ const ImmersiveBookingWorkflow = () => {
       color: THEME_COLOR,
       py: 4,
       pt: 12,
-      pb: 12,
+      pb: 1+2,
     }}>
       <Container maxWidth="md">
         <Stack direction={{ xs: "column", md: "row" }} spacing={6} alignItems="center">

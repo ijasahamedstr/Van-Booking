@@ -3,15 +3,15 @@
  * VERSION: 3.1.0 (No Grid Layout - Vertical List & Stack Only)
  */
 
-import React, { useEffect, useState, useMemo, useCallback } from "react";
+import { useEffect, useState, useMemo, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import Swal from "sweetalert2";
 
 import {
   Box, TextField, MenuItem, Button, Typography, Container, Card, CardActionArea,
-  CardMedia, CardContent, Paper, Stack, Fade, useMediaQuery,
+  Paper, Stack, Fade, useMediaQuery,
   CircularProgress, Divider, Stepper, Step, StepLabel, Alert, 
-  Chip, Avatar, ToggleButtonGroup, ToggleButton, LinearProgress
+  Avatar, ToggleButtonGroup, ToggleButton, LinearProgress
 } from "@mui/material";
 
 import CalendarTodayIcon from "@mui/icons-material/CalendarToday";
@@ -20,7 +20,6 @@ import TravelExploreIcon from "@mui/icons-material/TravelExplore";
 import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 import VerifiedUserIcon from "@mui/icons-material/VerifiedUser";
 import ArrowBackIosNewIcon from "@mui/icons-material/ArrowBackIosNew";
-import EventSeatIcon from '@mui/icons-material/EventSeat';
 
 const API_HOST = import.meta.env.VITE_API_HOST as string;
 const TODAY_DATE = new Date().toISOString().split("T")[0];
